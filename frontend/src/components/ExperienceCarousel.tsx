@@ -1,12 +1,16 @@
 import { useRef } from 'react';
 import { ArrowIcon, ExternalLinkIcon } from './Icons';
 import type { Experience } from '../types';
+import cnrLogo from '../assets/cnr-logo.jpeg';
+import denxaLogo from '../assets/denxa-logo.jpeg';
+import sulfateSharghLogo from '../assets/sulfate-shargh-logo.jpeg';
+import zutreLogo from '../assets/zutre-logo.jpeg';
 
 const companyLogos: Record<string, string> = {
-  'CNR (ISMN)': '/cnr-logo.jpeg',
-  Zutre: '/zutre-logo.jpeg',
-  Denxa: '/denxa-logo.jpeg',
-  'Sulfate Shargh Co': '/sulfate-shargh-logo.jpeg',
+  'CNR (ISMN)': cnrLogo,
+  Zutre: zutreLogo,
+  Denxa: denxaLogo,
+  'Sulfate Shargh Co': sulfateSharghLogo,
 };
 
 export function ExperienceCarousel({ experiences }: { experiences: Experience[] }) {

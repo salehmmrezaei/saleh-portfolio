@@ -1,7 +1,13 @@
-from fastapi import FastAPI, Depends
+import json
+import os
+import re
+from urllib import error as urllib_error
+from urllib import request as urllib_request
+
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 from . import models, database
@@ -55,6 +61,17 @@ class EducationSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class ContactRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=3, max_length=254)
+    subject: str = Field(min_length=1, max_length=160)
+    message: str = Field(min_length=1, max_length=5000)
+    website: str = Field(default="", max_length=200)
+
+    def validate_email(self) -> None:
+        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", self.email):
+            raise HTTPException(status_code=422, detail="Please enter a valid email address")
+
 @app.get("/")
 def read_root():
     return {"message": "Backend is running!"}
@@ -73,6 +90,47 @@ def get_educations(db: Session = Depends(get_db)):
 @app.get("/api/experiences", response_model=List[ExperienceSchema])
 def get_experiences(db: Session = Depends(get_db)):
     return db.query(models.Experience).all()
+
+@app.post("/api/contact")
+def send_contact_message(contact: ContactRequest):
+    contact.validate_email()
+
+    if contact.website:
+        return {"message": "Message received"}
+
+    api_key = os.getenv("RESEND_API_KEY")
+    from_email = os.getenv("RESEND_FROM_EMAIL")
+    to_email = os.getenv("CONTACT_TO_EMAIL", "salehmmrezaei@gmail.com")
+    if not api_key or not from_email:
+        raise HTTPException(status_code=503, detail="Contact email service is not configured")
+
+    payload = json.dumps({
+        "from": from_email,
+        "to": [to_email],
+        "reply_to": contact.email,
+        "subject": contact.subject,
+        "text": f"Name: {contact.name}\nEmail: {contact.email}\n\n{contact.message}",
+    }).encode("utf-8")
+    request = urllib_request.Request(
+        "https://api.resend.com/emails",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib_request.urlopen(request, timeout=10) as response:
+            if response.status >= 300:
+                raise HTTPException(status_code=502, detail="Email provider rejected the message")
+    except urllib_error.HTTPError as exc:
+        raise HTTPException(status_code=502, detail="Email provider rejected the message") from exc
+    except urllib_error.URLError as exc:
+        raise HTTPException(status_code=502, detail="Unable to reach email provider") from exc
+
+    return {"message": "Message sent successfully"}
 
 # Seed the database with initial data
 @app.post("/api/seed")

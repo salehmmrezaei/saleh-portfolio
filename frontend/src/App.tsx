@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import './index.css';
 import { ExperienceCarousel } from './components/ExperienceCarousel';
-import { ExternalLinkIcon } from './components/Icons';
+import { ExternalLinkIcon, HomeIcon } from './components/Icons';
 import { Hero } from './components/Hero';
 import { ContactSection } from './components/ContactSection';
 import type { Education, Experience, Project } from './types';
+import aboutPhoto from './assets/about-photo.jpg';
 
 type ContentStatus = 'loading' | 'loaded' | 'error';
 const rotatingLines = ['Hi, the name\'s Saleh', 'I build intelligent products.', 'I make AI feel useful.'];
@@ -17,6 +18,14 @@ function App() {
   const [lineIndex, setLineIndex] = useState(0);
   const [visibleText, setVisibleText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const scrollHome = () => {
+    document.querySelector<HTMLElement>('.page-shell')?.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+    window.history.replaceState(null, '', '#home');
+  };
 
   useEffect(() => {
     const line = rotatingLines[lineIndex];
@@ -53,16 +62,16 @@ function App() {
     <main className="page-shell">
       <Hero visibleText={visibleText} />
       <section className="content-section about-section snap-section" id="about">
-        <div className="section-heading"><p className="eyebrow">A LITTLE ABOUT ME</p><h2>Curious by nature.<br /><em>Builder by choice.</em></h2></div>
-        <p className="about-copy">
-          Hey 👋 I’m Saleh, an AI Engineer based in Italy with a background in both artificial intelligence and software engineering.
-          <br /><br />
-          I recently completed my M.Sc. in Artificial Intelligence at the University of Bologna, and my work has focused on building practical AI systems with LLMs, RAG, AI agents, NLP, and machine learning.
-          <br /><br />
-          I enjoy turning ideas and prototypes into reliable applications, whether that means designing RAG pipelines, building agentic workflows, developing Python/FastAPI backends, or experimenting with new models and evaluation methods.
-          <br /><br />
-          Outside of work, I’m always exploring new AI tools, improving my projects, and learning how to build better systems that are useful, scalable, and production-ready.
-        </p>
+        <div className="about-visual">
+          <div className="section-heading"><p className="eyebrow">A LITTLE ABOUT ME</p><h2><span className="heading-line">Curious by nature.</span><br /><em>Builder by choice.</em></h2></div>
+          <img className="about-photo" src={aboutPhoto} alt="Saleh exploring a forest trail" />
+        </div>
+        <div className="about-copy">
+          <p>Hey 👋 I’m Saleh, an AI Engineer based in Italy with a background in both artificial intelligence and software engineering.</p>
+          <p>I recently completed my M.Sc. in Artificial Intelligence at the University of Bologna, and my work has focused on building practical AI systems with LLMs, RAG, AI agents, NLP, and machine learning.</p>
+          <p>I enjoy turning ideas and prototypes into reliable applications, whether that means designing RAG pipelines, building agentic workflows, developing Python/FastAPI backends, or experimenting with new models and evaluation methods.</p>
+          <p>Outside of work, I’m always exploring new AI tools, improving my projects, and learning how to build better systems that are useful, scalable, and production-ready.</p>
+        </div>
       </section>
       <section className="content-section experience-section snap-section" id="experience">
         <div className="section-heading"><p className="eyebrow">PROFESSIONAL EXPERIENCES</p></div>
@@ -84,6 +93,7 @@ function App() {
         {educations.map((education) => <article className="education-row" key={education.id}><div><h3>{education.degree}</h3><p>{education.institution}, {education.country}</p></div><p>{education.start_date} — {education.end_date}</p></article>)}
       </section>
       <ContactSection />
+      <a className="global-home" href="#home" onClick={(event) => { event.preventDefault(); scrollHome(); }} aria-label="Back to home"><HomeIcon /></a>
     </main>
   );
 }
