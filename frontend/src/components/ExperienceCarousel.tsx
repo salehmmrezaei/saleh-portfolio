@@ -1,0 +1,48 @@
+import { useRef } from 'react';
+import { ArrowIcon, ExternalLinkIcon } from './Icons';
+import type { Experience } from '../types';
+
+const companyLogos: Record<string, string> = {
+  'CNR (ISMN)': '/cnr-logo.jpeg',
+  Zutre: '/zutre-logo.jpeg',
+  Denxa: '/denxa-logo.jpeg',
+  'Sulfate Shargh Co': '/sulfate-shargh-logo.jpeg',
+};
+
+export function ExperienceCarousel({ experiences }: { experiences: Experience[] }) {
+  const rail = useRef<HTMLDivElement>(null);
+  const move = (direction: number) => rail.current?.scrollBy({ left: direction * (rail.current.clientWidth * .78), behavior: 'auto' });
+
+  return (
+    <div className="experience-carousel">
+      <div className="carousel-controls">
+        <button type="button" onClick={() => move(-1)} aria-label="Previous experience"><ArrowIcon direction="left" /></button>
+        <button type="button" onClick={() => move(1)} aria-label="Next experience"><ArrowIcon /></button>
+      </div>
+      <div className="experience-rail" ref={rail} tabIndex={0} aria-label="Work experience cards">
+        {experiences.map((exp) => (
+          <article className="experience-card" key={exp.id}>
+            <div className="experience-card-header">
+              {companyLogos[exp.company] ? (
+                <img className="company-logo" src={companyLogos[exp.company]} alt={`${exp.company} logo`} />
+              ) : (
+                <div className="company-mark" aria-hidden="true">{exp.company.slice(0, 2).toUpperCase()}</div>
+              )}
+              <a href={exp.url} target="_blank" rel="noreferrer" aria-label={`Open ${exp.company}`}><ExternalLinkIcon /></a>
+            </div>
+            <h3>{exp.role}</h3><p className="card-company">{exp.company}</p>
+            <div className="tags experience-tags">{exp.skills.map((skill) => <span key={skill}>{skill}</span>)}</div>
+            <p className="card-date">{formatDate(exp.start_date)} — {formatDate(exp.end_date)}</p>
+            <ul className="experience-description">{exp.description.map((line) => <li key={line}>{line}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function formatDate(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+}

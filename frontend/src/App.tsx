@@ -1,144 +1,91 @@
-import { useState, useEffect } from 'react';
-import './index.css'; // Add this line back to restore Tailwind!
+import { useEffect, useState } from 'react';
+import './index.css';
+import { ExperienceCarousel } from './components/ExperienceCarousel';
+import { ExternalLinkIcon } from './components/Icons';
+import { Hero } from './components/Hero';
+import { ContactSection } from './components/ContactSection';
+import type { Education, Experience, Project } from './types';
 
-interface Project {
-  id: number;
-  name: string;
-  skills: string[];
-  url: string;
-  description: string[];
-}
+type ContentStatus = 'loading' | 'loaded' | 'error';
+const rotatingLines = ['Hi, the name\'s Saleh', 'I build intelligent products.', 'I make AI feel useful.'];
 
-interface Experience {
-  id: number;
-  company: string;
-  role: string;
-  start_date: string;
-  end_date: string;
-  skills: string[];
-  url: string;
-  description: string[];
-}
-
-interface Education {
-  id: number;
-  institution: string;
-  degree: string;
-  grade: string;
-  start_date: string;
-  end_date: string;
-  country: string;
-}
-
-export default function App() {
+function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [educations, setEducations] = useState<Education[]>([]);
+  const [status, setStatus] = useState<Record<string, ContentStatus>>({ projects: 'loading', experiences: 'loading', educations: 'loading' });
+  const [lineIndex, setLineIndex] = useState(0);
+  const [visibleText, setVisibleText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/projects')
-      .then((response) => response.json())
-      .then((data) => setProjects(data))
-      .catch((error) => console.error("Error fetching projects:", error));
+    const line = rotatingLines[lineIndex];
+    const complete = visibleText === line;
+    const timer = window.setTimeout(() => {
+      const next = isDeleting ? line.slice(0, visibleText.length - 1) : line.slice(0, visibleText.length + 1);
+      setVisibleText(next);
+      if (!isDeleting && next === line) window.setTimeout(() => setIsDeleting(true), 1500);
+      if (isDeleting && next === '') { setIsDeleting(false); setLineIndex((index) => (index + 1) % rotatingLines.length); }
+    }, isDeleting ? 45 : complete ? 1500 : 85);
+    return () => window.clearTimeout(timer);
+  }, [isDeleting, lineIndex, visibleText]);
 
-    fetch('http://127.0.0.1:8000/api/experiences')
-      .then((response) => response.json())
-      .then((data) => setExperiences(data))
-      .catch((error) => console.error("Error fetching experiences:", error));
-
-    fetch('http://127.0.0.1:8000/api/educations')
-      .then((response) => response.json())
-      .then((data) => setEducations(data))
-      .catch((error) => console.error("Error fetching educations:", error));
+  useEffect(() => {
+    const load = async <T,>(endpoint: string, setter: (value: T[]) => void) => {
+      try {
+        const response = await fetch(`/api/${endpoint}`);
+        if (!response.ok) throw new Error(`Unable to load ${endpoint}`);
+        setter(await response.json() as T[]);
+        setStatus((current) => ({ ...current, [endpoint]: 'loaded' }));
+      } catch (error) {
+        console.error(`Error fetching ${endpoint}:`, error);
+        setStatus((current) => ({ ...current, [endpoint]: 'error' }));
+      }
+    };
+    void load<Project>('projects', setProjects);
+    void load<Experience>('experiences', setExperiences);
+    void load<Education>('educations', setEducations);
   }, []);
 
+  const message = (key: string, label: string, count: number) => status[key] === 'loading' ? <p className="empty-state">Loading {label}...</p> : status[key] === 'error' ? <p className="empty-state">{label} are temporarily unavailable.</p> : count === 0 ? <p className="empty-state">No {label} found.</p> : null;
+
   return (
-    <main className="p-8 font-sans max-w-3xl mx-auto text-left">
-      <header className="mb-10">
-        <h1 className="text-4xl font-bold">Saleh Rezaei</h1>
-        <h2 className="text-xl text-gray-600 mt-2">AI/ML Engineer | LLMs</h2>
-      </header>
-
-      <section className="mb-8">
-        <h3 className="text-2xl font-semibold border-b pb-2 mb-4">Education</h3>
-        <div className="space-y-6">
-          {educations.length > 0 ? (
-            educations.map((edu) => (
-              <div key={edu.id} className="border p-4 rounded-lg shadow-sm">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="text-xl font-bold">{edu.degree}</h4>
-                  <span className="text-sm text-gray-500">{edu.start_date} to {edu.end_date}</span>
-                </div>
-                <p className="text-gray-700"><strong>{edu.institution}</strong>, {edu.country}</p>
-                <p className="text-sm text-gray-600 mt-1">Grade: {edu.grade}</p>
-              </div>
-            ))
-          ) : (
-            <p>Loading education from backend...</p>
-          )}
-        </div>
+    <main className="page-shell">
+      <Hero visibleText={visibleText} />
+      <section className="content-section about-section snap-section" id="about">
+        <div className="section-heading"><p className="eyebrow">A LITTLE ABOUT ME</p><h2>Curious by nature.<br /><em>Builder by choice.</em></h2></div>
+        <p className="about-copy">
+          Hey 👋 I’m Saleh, an AI Engineer based in Italy with a background in both artificial intelligence and software engineering.
+          <br /><br />
+          I recently completed my M.Sc. in Artificial Intelligence at the University of Bologna, and my work has focused on building practical AI systems with LLMs, RAG, AI agents, NLP, and machine learning.
+          <br /><br />
+          I enjoy turning ideas and prototypes into reliable applications, whether that means designing RAG pipelines, building agentic workflows, developing Python/FastAPI backends, or experimenting with new models and evaluation methods.
+          <br /><br />
+          Outside of work, I’m always exploring new AI tools, improving my projects, and learning how to build better systems that are useful, scalable, and production-ready.
+        </p>
       </section>
-
-      <section className="mb-8">
-        <h3 className="text-2xl font-semibold border-b pb-2 mb-4">Experience</h3>
-        <div className="space-y-6">
-          {experiences.length > 0 ? (
-            experiences.map((exp) => (
-              <div key={exp.id} className="border p-4 rounded-lg shadow-sm">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="text-xl font-bold">
-                    <a href={exp.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-                      {exp.role} at {exp.company}
-                    </a>
-                  </h4>
-                  <span className="text-sm text-gray-500">{exp.start_date} to {exp.end_date}</span>
-                </div>
-                <div className="flex flex-wrap gap-2 my-2">
-                  {exp.skills.map((skill, index) => (
-                    <span key={index} className="bg-gray-200 text-sm px-2 py-1 rounded">{skill}</span>
-                  ))}
-                </div>
-                <ul className="list-disc list-inside space-y-1 mt-2 text-gray-700">
-                  {exp.description.map((line, index) => (
-                    <li key={index}>{line}</li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <p>Loading experiences from backend...</p>
-          )}
-        </div>
+      <section className="content-section experience-section snap-section" id="experience">
+        <div className="section-heading"><p className="eyebrow">PROFESSIONAL EXPERIENCES</p></div>
+        {message('experiences', 'experiences', experiences.length)}
+        {experiences.length > 0 && <ExperienceCarousel experiences={experiences} />}
       </section>
-
-      <section className="mb-8">
-        <h3 className="text-2xl font-semibold border-b pb-2 mb-4">Projects</h3>
-        <div className="space-y-6">
-          {projects.length > 0 ? (
-            projects.map((project) => (
-              <div key={project.id} className="border p-4 rounded-lg shadow-sm">
-                <h4 className="text-xl font-bold">
-                  <a href={project.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-                    {project.name}
-                  </a>
-                </h4>
-                <div className="flex flex-wrap gap-2 my-2">
-                  {project.skills.map((skill, index) => (
-                    <span key={index} className="bg-gray-200 text-sm px-2 py-1 rounded">{skill}</span>
-                  ))}
-                </div>
-                <ul className="list-disc list-inside space-y-1 mt-2 text-gray-700">
-                  {project.description.map((line, index) => (
-                    <li key={index}>{line}</li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <p>Loading projects from backend...</p>
-          )}
-        </div>
+      <section className="content-section projects-section snap-section" id="projects">
+        <div className="section-heading"><p className="eyebrow">SELECTED WORK</p><h2>Projects</h2></div>
+        {message('projects', 'projects', projects.length)}
+        <div className="project-grid">{projects.map((project) => <article className="project-card" key={project.id}><div><p className="project-number">0{project.id}</p><h3>{project.name}</h3><p>{project.description.join(' ')}</p></div><div className="project-footer"><div className="tags">{project.skills.map((skill) => <span key={skill}>{skill}</span>)}</div><a href={project.url} target="_blank" rel="noreferrer" aria-label={`View ${project.name}`}><ExternalLinkIcon /></a></div></article>)}</div>
       </section>
+      <section className="content-section skills-section snap-section" id="skills">
+        <div className="section-heading"><p className="eyebrow">WHAT I WORK WITH</p><h2>Skills</h2></div>
+        <div className="skills-list">{['Python', 'Machine Learning', 'LLMs & RAG', 'FastAPI', 'Docker', 'SQL & Databases', 'React & TypeScript', 'Cloud & Deployment'].map((skill) => <span key={skill}>{skill}</span>)}</div>
+      </section>
+      <section className="content-section education-section snap-section" id="education">
+        <div className="section-heading"><p className="eyebrow">THE FOUNDATION</p><h2>Education</h2></div>
+        {message('educations', 'education records', educations.length)}
+        {educations.map((education) => <article className="education-row" key={education.id}><div><h3>{education.degree}</h3><p>{education.institution}, {education.country}</p></div><p>{education.start_date} — {education.end_date}</p></article>)}
+      </section>
+      <ContactSection />
     </main>
   );
 }
+
+export default App;
