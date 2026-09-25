@@ -239,8 +239,8 @@ h1 {
 .content-section.about-section {
   display: grid;
 
-  /* left side 42%, right side 58% */
-  grid-template-columns: 42% 58%;
+  /* Flexible 40/60 split keeps the gap inside the available width. */
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 
   /* small gap between image/heading and text */
   column-gap: 3rem;
@@ -692,6 +692,12 @@ this reduces their visual spacing slightly.
   width: 27px;
   height: 27px;
   stroke-width: 1.55;
+}
+
+.social-links img {
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
 }
 
 .social-links .linkedin-link {
