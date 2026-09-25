@@ -23,7 +23,9 @@ app.add_middleware(
 class ProjectSchema(BaseModel):
     id: int
     name: str
-    description: str
+    skills: List[str]
+    url: str
+    description: List[str]
 
     class Config:
         from_attributes = True

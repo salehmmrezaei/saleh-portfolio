@@ -1,5 +1,5 @@
-from typing import List
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.dialects.postgresql import ARRAY
 from .database import Base
 
 class Project(Base):
@@ -7,6 +7,6 @@ class Project(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    skills = Column(List(String), default=[])
+    skills = Column(ARRAY(String), default=[])
     url = Column(String)
-    description = Column(List(String), default=[])
+    description = Column(ARRAY(String), default=[])
