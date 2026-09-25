@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 interface Project {
   id: number;
   name: string;
-  description: string;
+  skills: string[];
+  url: string;
+  description: string[];
 }
 
 export default function App() {
@@ -24,6 +26,11 @@ export default function App() {
       </header>
 
       <section className="mb-8">
+        <h3 className="text-2xl font-semibold border-b pb-2 mb-4">Education</h3>
+        <p><strong>Master's Student in AI</strong> - University of Bologna</p>
+      </section>
+
+      <section className="mb-8">
         <h3 className="text-2xl font-semibold border-b pb-2 mb-4">Experience</h3>
         <ul className="space-y-4 list-disc list-inside">
           <li><strong>AI Engineer</strong> at CNR (ISMN)</li>
@@ -34,17 +41,31 @@ export default function App() {
 
       <section className="mb-8">
         <h3 className="text-2xl font-semibold border-b pb-2 mb-4">Projects</h3>
-        <ul className="space-y-4 list-disc list-inside">
+        <div className="space-y-6">
           {projects.length > 0 ? (
             projects.map((project) => (
-              <li key={project.id}>
-                <strong>{project.name}</strong> - {project.description}
-              </li>
+              <div key={project.id} className="border p-4 rounded-lg shadow-sm">
+                <h4 className="text-xl font-bold">
+                  <a href={project.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                    {project.name}
+                  </a>
+                </h4>
+                <div className="flex flex-wrap gap-2 my-2">
+                  {project.skills.map(skill => (
+                    <span key={skill} className="bg-gray-200 text-sm px-2 py-1 rounded">{skill}</span>
+                  ))}
+                </div>
+                <ul className="list-disc list-inside space-y-1 mt-2 text-gray-700">
+                  {project.description.map((line, index) => (
+                    <li key={index}>{line}</li>
+                  ))}
+                </ul>
+              </div>
             ))
           ) : (
-            <li>Loading projects from backend...</li>
+            <p>Loading projects from backend...</p>
           )}
-        </ul>
+        </div>
       </section>
     </main>
   );
