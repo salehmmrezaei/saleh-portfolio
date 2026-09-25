@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './index.css';
 import { ExperienceCarousel } from './components/ExperienceCarousel';
-import { ExternalLinkIcon, HomeIcon } from './components/Icons';
+import { ExternalLinkIcon, HomeButton } from './components/Icons';
 import { Hero } from './components/Hero';
 import { ContactSection } from './components/ContactSection';
 import type { Education, Experience, Project } from './types';
@@ -60,40 +60,44 @@ function App() {
 
   return (
     <main className="page-shell">
-      <Hero visibleText={visibleText} />
+      <Hero visibleText={visibleText} onBackHome={scrollHome} />
       <section className="content-section about-section snap-section" id="about">
         <div className="about-visual">
           <div className="section-heading"><p className="eyebrow">A LITTLE ABOUT ME</p><h2><span className="heading-line">Curious by nature.</span><br /><em>Builder by choice.</em></h2></div>
           <img className="about-photo" src={aboutPhoto} alt="Saleh exploring a forest trail" />
         </div>
         <div className="about-copy">
-          <p>Hey 👋 I’m Saleh, an AI Engineer based in Italy with a background in both artificial intelligence and software engineering.</p>
-          <p>I recently completed my M.Sc. in Artificial Intelligence at the University of Bologna, and my work has focused on building practical AI systems with LLMs, RAG, AI agents, NLP, and machine learning.</p>
+          <p>Hey 👋 I’m Saleh, an AI Engineer based in Italy with a background in both artificial intelligence and software engineering.
+            I completed my M.Sc. in Artificial Intelligence at the University of Bologna, and my work has focused on building practical AI systems with LLMs, RAG, AI agents, NLP, and machine learning.</p>
           <p>I enjoy turning ideas and prototypes into reliable applications, whether that means designing RAG pipelines, building agentic workflows, developing Python/FastAPI backends, or experimenting with new models and evaluation methods.</p>
           <p>Outside of work, I’m always exploring new AI tools, improving my projects, and learning how to build better systems that are useful, scalable, and production-ready.</p>
         </div>
+        <HomeButton onClick={scrollHome} />
       </section>
       <section className="content-section experience-section snap-section" id="experience">
         <div className="section-heading"><p className="eyebrow">PROFESSIONAL EXPERIENCES</p></div>
         {message('experiences', 'experiences', experiences.length)}
         {experiences.length > 0 && <ExperienceCarousel experiences={experiences} />}
+        <HomeButton onClick={scrollHome} />
       </section>
       <section className="content-section projects-section snap-section" id="projects">
         <div className="section-heading"><p className="eyebrow">SELECTED WORK</p><h2>Projects</h2></div>
         {message('projects', 'projects', projects.length)}
         <div className="project-grid">{projects.map((project) => <article className="project-card" key={project.id}><div><p className="project-number">0{project.id}</p><h3>{project.name}</h3><p>{project.description.join(' ')}</p></div><div className="project-footer"><div className="tags">{project.skills.map((skill) => <span key={skill}>{skill}</span>)}</div><a href={project.url} target="_blank" rel="noreferrer" aria-label={`View ${project.name}`}><ExternalLinkIcon /></a></div></article>)}</div>
+        <HomeButton onClick={scrollHome} />
       </section>
       <section className="content-section skills-section snap-section" id="skills">
         <div className="section-heading"><p className="eyebrow">WHAT I WORK WITH</p><h2>Skills</h2></div>
         <div className="skills-list">{['Python', 'Machine Learning', 'LLMs & RAG', 'FastAPI', 'Docker', 'SQL & Databases', 'React & TypeScript', 'Cloud & Deployment'].map((skill) => <span key={skill}>{skill}</span>)}</div>
+        <HomeButton onClick={scrollHome} />
       </section>
       <section className="content-section education-section snap-section" id="education">
         <div className="section-heading"><p className="eyebrow">THE FOUNDATION</p><h2>Education</h2></div>
         {message('educations', 'education records', educations.length)}
         {educations.map((education) => <article className="education-row" key={education.id}><div><h3>{education.degree}</h3><p>{education.institution}, {education.country}</p></div><p>{education.start_date} — {education.end_date}</p></article>)}
+        <HomeButton onClick={scrollHome} />
       </section>
-      <ContactSection />
-      <a className="global-home" href="#home" onClick={(event) => { event.preventDefault(); scrollHome(); }} aria-label="Back to home"><HomeIcon /></a>
+      <ContactSection onBackHome={scrollHome} />
     </main>
   );
 }

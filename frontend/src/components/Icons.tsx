@@ -28,6 +28,10 @@ export function HomeIcon({ className }: IconProps) {
   return <img className={className} src={homeIcon} alt="" aria-hidden="true" />;
 }
 
+export function HomeButton({ onClick }: { onClick: () => void }) {
+  return <a className="section-home" href="#home" onClick={(event) => { event.preventDefault(); onClick(); }} aria-label="Back to home"><HomeIcon /></a>;
+}
+
 export function ArrowIcon({ direction = 'right', className }: IconProps & { direction?: 'left' | 'right' }) {
   return <svg className={className} viewBox="0 0 24 24" aria-hidden="true"><path d={direction === 'left' ? 'M19 12H5m6-6-6 6 6 6' : 'M5 12h14m-6-6 6 6-6 6'} /></svg>;
 }
