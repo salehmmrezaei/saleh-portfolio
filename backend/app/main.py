@@ -13,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], 
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -112,7 +112,8 @@ def seed_database(db: Session = Depends(get_db)):
             url="https://www.cnr.it/",
             description=[
                 "Designed and deployed LLM-powered pipelines for extracting structured information from scientific and technical documents using Python, LangChain, and NLP techniques.",
-                "Built and maintained containerized services with Docker, implementing testing, validation, logging, and error handling for reliable application behavior."
+                "Built and maintained containerized services with Docker, implementing testing, validation, logging, and error handling for reliable application behavior.",
+                "Developed and evaluated prompting and information-extraction strategies to improve accuracy, consistency, and reliability across complex scientific documents."
                 ]),
         models.Experience(
             company="Zutre",
