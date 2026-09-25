@@ -1,11 +1,12 @@
-import { ContactIcon, GitHubIcon, LinkedInIcon, MailIcon } from './Icons';
+import { ContactIcon, GitHubIcon, HomeButton, LinkedInIcon, MailIcon } from './Icons';
 import profileImage from '../assets/profile.png';
 
 interface HeroProps {
   visibleText: string;
+  onBackHome: () => void;
 }
 
-export function Hero({ visibleText }: HeroProps) {
+export function Hero({ visibleText, onBackHome }: HeroProps) {
   return (
     <section className="hero snap-section" id="home">
       <nav className="topbar" aria-label="Primary navigation">
@@ -25,6 +26,7 @@ export function Hero({ visibleText }: HeroProps) {
           <a href="#about">About me</a><a href="#experience">My experiences</a><a href="#projects">My projects</a><a href="#skills">Skills</a><a href="#contact">Contact me</a>
         </nav>
       </div>
+      <HomeButton onClick={onBackHome} />
     </section>
   );
 }

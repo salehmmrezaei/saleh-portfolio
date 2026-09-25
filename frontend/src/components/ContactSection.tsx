@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
+import { HomeButton } from './Icons';
 
-export function ContactSection() {
+export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
   const [isSending, setIsSending] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -68,6 +69,7 @@ export function ContactSection() {
         {status && <p className={`form-status ${status.type}`} role={status.type === 'error' ? 'alert' : 'status'}>{status.message}</p>}
       </form>
       <small>© {new Date().getFullYear()} Saleh Rezaei</small>
+      <HomeButton onClick={onBackHome} />
     </footer>
   );
 }

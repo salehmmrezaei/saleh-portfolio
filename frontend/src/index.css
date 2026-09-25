@@ -43,7 +43,7 @@ a {
 .topbar {
   position: absolute;
   z-index: 3;
-  top: 27px;
+  top: 18px;
   left: 2.2vw;
   right: 4.3vw;
   display: flex;
@@ -56,7 +56,7 @@ a {
 
 .social-links {
   display: flex;
-  gap: 1.4rem;
+  gap: 1rem;
   align-items: center;
   font: 700 1.05rem 'DM Mono', monospace;
   color: #858585;
@@ -199,19 +199,35 @@ h1 {
   transform: translateY(-2px);
 }
 
-.hero-home {
+.section-home {
   position: absolute;
-  bottom: 17px;
+  bottom: 1rem;
   left: 50%;
   display: grid;
   place-items: center;
-  width: 39px;
-  height: 39px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(108, 152, 161, .35);
   border-radius: 50%;
-  background: #6c98a1;
-  color: white;
-  font-size: 1.5rem;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 3px 12px rgba(35, 55, 55, .09);
   transform: translateX(-50%);
+  transition: transform .2s, background .2s, box-shadow .2s;
+  z-index: 2;
+}
+
+.section-home:hover {
+  background: #e7ede9;
+  box-shadow: 0 5px 14px rgba(35, 55, 55, .14);
+  transform: translate(-50%, -2px);
+}
+
+.section-home img {
+  display: block;
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
 }
 
 
@@ -221,10 +237,11 @@ h1 {
 ========================= */
 
 .content-section {
+  position: relative;
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 6rem 2rem;
+  padding: 6rem 2rem 5rem;
 
   display: flex;
   flex-direction: column;
@@ -237,13 +254,14 @@ h1 {
 ========================= */
 
 .content-section.about-section {
+  position: relative;
   display: grid;
 
   /* Flexible 40/60 split keeps the gap inside the available width. */
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 2.4fr);
 
   /* small gap between image/heading and text */
-  column-gap: 3rem;
+  column-gap: clamp(2rem, 4vw, 4rem);
 
   align-items: center;
 
@@ -251,7 +269,22 @@ h1 {
   max-width: 1350px;
   margin: 0 auto;
 
-  padding: 5rem 2rem;
+  padding: 5rem 2rem 5.5rem;
+}
+
+.about-visual {
+  min-width: 0;
+}
+
+.about-photo {
+  display: block;
+  width: 100%;
+  max-width: 430px;
+  height: clamp(250px, 31vw, 410px);
+  margin-top: 1.5rem;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: center 38%;
 }
 
 
@@ -280,16 +313,14 @@ h1 {
 .about-copy {
   min-width: 0;
   width: 100%;
-  max-width: none;
-
-  margin: 0;
-
-  color: #65716d;
-
-  font-size: 1.08rem;
+  max-width: 54ch;
+  margin-top: 8rem;
+  color: #676571;
+  text-align: justify;
+  font-size: 1.125rem;
   font-weight: 500;
-
   line-height: 1.6;
+  padding: 1rem 0 0 0;
 }
 
 
@@ -299,7 +330,7 @@ h1 {
 
 @media (max-width: 950px) {
   .content-section.about-section {
-    grid-template-columns: 44% 56%;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
     column-gap: 2rem;
 
     padding-left: 1.5rem;
@@ -309,6 +340,11 @@ h1 {
   .about-copy {
     font-size: 1rem;
     line-height: 1.6;
+  }
+
+  .about-photo {
+    max-width: 100%;
+    height: clamp(230px, 34vw, 340px);
   }
 }
 
@@ -325,6 +361,11 @@ h1 {
     max-width: 100%;
 
     padding: 5rem 1.5rem;
+  }
+
+  .about-photo {
+    height: min(78vw, 360px);
+    margin-top: 1.25rem;
   }
 
   .about-copy {
@@ -535,6 +576,7 @@ this reduces their visual spacing slightly.
 ========================= */
 
 .contact-section {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(220px, .75fr) minmax(320px, 1fr);
   gap: 4rem;
@@ -543,7 +585,7 @@ this reduces their visual spacing slightly.
   padding:
     6rem
     max(2rem, calc((100% - 1180px) / 2))
-    2rem;
+    5rem;
 
   background: #e7ede9;
 }
@@ -656,6 +698,7 @@ this reduces their visual spacing slightly.
 }
 
 .snap-section {
+  position: relative;
   min-height: 100svh;
   scroll-snap-align: start;
   scroll-snap-stop: always;
@@ -669,7 +712,6 @@ this reduces their visual spacing slightly.
 .topbar svg,
 .contact-corner svg,
 .social-links svg,
-.hero-home svg,
 .external-icon,
 .carousel-controls svg {
   width: 18px;
@@ -695,8 +737,9 @@ this reduces their visual spacing slightly.
 }
 
 .social-links img {
-  width: 27px;
-  height: 27px;
+  display: block;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
@@ -725,16 +768,11 @@ this reduces their visual spacing slightly.
   font-size: .75rem;
 }
 
-.contact-corner svg {
-  width: 26px;
-  height: 26px;
-  stroke-width: 1.55;
-}
-
-.hero-home svg {
-  width: 21px;
-  height: 21px;
-  stroke-width: 1.4;
+.contact-corner img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 
