@@ -43,8 +43,15 @@ def seed_database(db: Session = Depends(get_db)):
         return {"message": "Database already seeded!"}
     
     projects = [
-        models.Project(name="RepoPilot AI", description="Production-oriented codebase intelligence platform."),
-        models.Project(name="Voice Notes AI", description="Local-first AI application for audio transcription.")
+        models.Project(name="RepoPilot AI",
+                       skills=["Python", "FastAPI", "PostgreSQL", "Redis", "Celery", "Docker"],
+                       url="https://github.com/salehmmrezaei/repilot-ai",
+                       description=["Built a production-oriented codebase intelligence platform for repository ingestion, versioned source indexing, hybrid retrieval, and grounded codebase Q&A.", "Designed asynchronous processing with Redis/Celery and implemented reproducible retrieval evaluation using Recall@K and MRR."]),
+        models.Project(name="Voice Notes AI",
+                       skills=["Python", "FastAPI", "PostgreSQL", "Redis", "Celery", "Docker"],
+                       url="https://github.com/salehmmrezaei/voice-notes-ai",
+                       description=["Built an end-to-end AI application combining audio ingestion, Faster-Whisper transcription, and local LLM-powered text processing.", "Developed a FastAPI backend and React/TypeScript frontend with validation, error handling, automated tests, CI, and Dockerized deployment."]),
+
     ]
     db.add_all(projects)
     db.commit()
