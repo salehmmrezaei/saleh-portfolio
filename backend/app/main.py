@@ -1,317 +1,110 @@
-import json
-import os
-import re
-from urllib import error as urllib_error
-from urllib import request as urllib_request
+from collections import defaultdict, deque
+from time import monotonic
+from threading import Lock
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
-from typing import List
 
-from . import models, database
-from .database import engine, get_db
+from . import models
+from .config import get_allowed_origins
+from .database import check_database_connection, get_db
+from .schemas import (
+    ContactRequest,
+    ContactResponse,
+    EducationSchema,
+    ExperienceSchema,
+    ProjectSchema,
+    SkillSchema,
+)
+from .services.email import send_contact_email
 
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
-
+app = FastAPI(title="Saleh Portfolio API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=get_allowed_origins(),
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
-# 1. Add this Pydantic model so FastAPI knows how to structure the JSON
-class ProjectSchema(BaseModel):
-    id: int
-    name: str
-    skills: List[str]
-    url: str
-    description: List[str]
+CONTACT_WINDOW_SECONDS = 60
+CONTACT_REQUEST_LIMIT = 5
+contact_requests: defaultdict[str, deque[float]] = defaultdict(deque)
+contact_rate_lock = Lock()
 
-    class Config:
-        from_attributes = True
 
-class ExperienceSchema(BaseModel):
-    id: int
-    company: str
-    company_slug: str
-    role: str
-    start_date: str
-    end_date: str
-    skills: List[str]
-    url: str
-    description: List[str]
+def enforce_contact_rate_limit(request: Request) -> None:
+    client = request.client.host if request.client else "unknown"
+    now = monotonic()
+    with contact_rate_lock:
+        attempts = contact_requests[client]
+        while attempts and now - attempts[0] >= CONTACT_WINDOW_SECONDS:
+            attempts.popleft()
+        if len(attempts) >= CONTACT_REQUEST_LIMIT:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many contact requests. Please try again later.",
+            )
+        attempts.append(now)
 
-    class Config:
-        from_attributes = True
 
-class EducationSchema(BaseModel):
-    id: int
-    institution: str
-    degree: str
-    grade: str
-    start_date: str
-    end_date: str
-    country: str
-
-    class Config:
-        from_attributes = True
-
-class SkillSchema(BaseModel):
-    id: int
-    title: str
-    skills: List[str]
-    description: str
-    featured: bool
-
-    class Config:
-        from_attributes = True
-
-class ContactRequest(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
-    email: str = Field(min_length=3, max_length=254)
-    subject: str = Field(min_length=1, max_length=160)
-    message: str = Field(min_length=1, max_length=5000)
-    website: str = Field(default="", max_length=200)
-
-    def validate_email(self) -> None:
-        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", self.email):
-            raise HTTPException(status_code=422, detail="Please enter a valid email address")
-
-@app.get("/")
-def read_root():
+@app.get("/", tags=["system"])
+def read_root() -> dict[str, str]:
     return {"message": "Backend is running!"}
 
-# Get all projects
-@app.get("/api/projects", response_model=List[ProjectSchema])
-def get_projects(db: Session = Depends(get_db)):
-    return db.query(models.Project).all()
 
-# Get all education records
-@app.get("/api/educations", response_model=List[EducationSchema])
-def get_educations(db: Session = Depends(get_db)):
-    return db.query(models.Education).all()
+@app.get("/health/live", tags=["system"])
+def liveness() -> dict[str, str]:
+    return {"status": "ok"}
 
-# Get all experiences
-@app.get("/api/experiences", response_model=List[ExperienceSchema])
-def get_experiences(db: Session = Depends(get_db)):
-    return db.query(models.Experience).all()
 
-# Get all skill categories
-@app.get("/api/skills", response_model=List[SkillSchema])
-def get_skills(db: Session = Depends(get_db)):
-    return db.query(models.Skill).order_by(models.Skill.id).all()
-
-@app.post("/api/contact")
-def send_contact_message(contact: ContactRequest):
-    contact.validate_email()
-
-    if contact.website:
-        return {"message": "Message received"}
-
-    api_key = os.getenv("RESEND_API_KEY")
-    from_email = os.getenv("RESEND_FROM_EMAIL")
-    to_email = os.getenv("CONTACT_TO_EMAIL", "salehmmrezaei@gmail.com")
-    if not api_key or not from_email:
-        raise HTTPException(status_code=503, detail="Contact email service is not configured")
-
-    payload = json.dumps({
-        "from": from_email,
-        "to": [to_email],
-        "reply_to": contact.email,
-        "subject": contact.subject,
-        "text": f"Name: {contact.name}\nEmail: {contact.email}\n\n{contact.message}",
-    }).encode("utf-8")
-    request = urllib_request.Request(
-        "https://api.resend.com/emails",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-
+@app.get("/health/ready", tags=["system"])
+def readiness() -> dict[str, str]:
     try:
-        with urllib_request.urlopen(request, timeout=10) as response:
-            if response.status >= 300:
-                raise HTTPException(status_code=502, detail="Email provider rejected the message")
-    except urllib_error.HTTPError as exc:
-        raise HTTPException(status_code=502, detail="Email provider rejected the message") from exc
-    except urllib_error.URLError as exc:
-        raise HTTPException(status_code=502, detail="Unable to reach email provider") from exc
+        check_database_connection()
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Database is unavailable") from exc
+    return {"status": "ok"}
 
-    return {"message": "Message sent successfully"}
 
-# Seed the database with initial data
-@app.post("/api/seed")
-def seed_database(db: Session = Depends(get_db)):
-    if db.query(models.Project).first():
-        company_slugs = {
-            "https://www.cnr.it/": "cnr",
-            "https://zutre.com": "zutre",
-            "https://www.denxa.ca": "denxa",
-            "https://zincsulfate.co": "sulfate-shargh",
-        }
-        for experience in db.query(models.Experience).all():
-            if not experience.company_slug and experience.url in company_slugs:
-                experience.company_slug = company_slugs[experience.url]
-        db.commit()
-        if not db.query(models.Skill).first():
-            db.add_all([
-                models.Skill(
-                    title="LLM & Generative AI",
-                    skills=["RAG", "LangChain", "AI Agents", "Prompt Engineering", "LLM Evaluation", "Vector Databases"],
-                    description="Building retrieval, agentic, and evaluation pipelines for production AI.",
-                    featured=True,
-                ),
-                models.Skill(
-                    title="Backend & Production",
-                    skills=["Python", "FastAPI", "REST APIs", "Docker", "Redis", "Celery", "PostgreSQL", "AWS"],
-                    description="APIs, asynchronous workloads, containerized services, and scalable infrastructure.",
-                ),
-                models.Skill(
-                    title="Machine Learning & Data",
-                    skills=["PyTorch", "Scikit-learn", "Pandas", "NumPy", "SQL", "ETL"],
-                    description="Experimentation, evaluation, data processing, and model-driven applications.",
-                ),
-                models.Skill(
-                    title="Full-Stack & Workflow",
-                    skills=["React", "TypeScript", "Git", "CI"],
-                    description="Enough frontend and engineering tooling to ship complete AI products.",
-                ),
-            ])
-            db.commit()
-        return {"message": "Database already seeded!"}
-    
-    projects = [
-        models.Project(
-            name="RepoPilot AI",
-            skills=["Python", "FastAPI", "PostgreSQL", "Redis", "Celery", "Docker"],
-            url="https://github.com/salehmmrezaei/repopilot-ai",
-            description=[
-                "Built a production-oriented codebase intelligence platform for repository ingestion, versioned source indexing, hybrid retrieval, and grounded codebase Q&A.",
-                "Designed asynchronous processing with Redis/Celery and implemented reproducible retrieval evaluation using Recall@K and MRR."
-                ]),
-        models.Project(
-            name="Voice Notes AI",
-            skills=["Python", "FastAPI", "PostgreSQL", "Redis", "Celery", "Docker"],
-            url="https://github.com/salehmmrezaei/voice-notes-ai",
-            description=[
-                "Built an end-to-end AI application combining audio ingestion, Faster-Whisper transcription, and local LLM-powered text processing.",
-                "Developed a FastAPI backend and React/TypeScript frontend with validation, error handling, automated tests, CI, and Dockerized deployment."
-                ]),
+@app.get("/api/projects", response_model=list[ProjectSchema], tags=["portfolio"])
+def get_projects(db: Session = Depends(get_db)) -> list[models.Project]:
+    return db.query(models.Project).order_by(models.Project.id.asc()).all()
 
-    ]
-    db.add_all(projects)
-    db.commit()
 
-    experiences = [
-        models.Experience(
-            company="CNR (ISMN)",
-            company_slug="cnr",
-            role="AI Engineer",
-            start_date="2025-11-01",
-            end_date="2026-08-31",
-            skills=["Python", "Machine Learning", "Data Analysis"],
-            url="https://www.cnr.it/",
-            description=[
-                "Designed and deployed LLM-powered pipelines for extracting structured information from scientific and technical documents using Python, LangChain, and NLP techniques.",
-                "Built and maintained containerized services with Docker, implementing testing, validation, logging, and error handling for reliable application behavior.",
-                "Developed and evaluated prompting and information-extraction strategies to improve accuracy, consistency, and reliability across complex scientific documents."
-                ]),
-        models.Experience(
-            company="Zutre",
-            company_slug="zutre",
-            role="R&D AI Engineer",
-            start_date="2025-12-01",
-            end_date="2026-06-30",
-            skills=["Python", "Deep Learning", "Computer Vision"],
-            url="https://zutre.com",
-            description=[
-                "Built end-to-end RAG pipelines covering document ingestion, chunking, embeddings, vector database indexing, semantic retrieval, context assembly, and LLM generation.",
-                "Evaluated LLMs, embedding models, vector databases, chunking strategies, and retrieval configurations using systematic experiments and retrieval-quality metrics.",
-                "Improved RAG quality through retrieval and prompt optimization, comparing candidate architectures to support production-oriented model and component selection."
-                ]),
-        models.Experience(
-            company="Denxa",
-            company_slug="denxa",
-            role="Software Engineer",
-            start_date="2022-12-01",
-            end_date="2023-05-31",
-            skills=["Python", "Web Development", "Database Design"],
-            url="https://www.denxa.ca",
-            description=[
-                "Developed Python backend services and REST APIs for data-intensive applications, integrating data-processing and machine-learning components into application workflows.",
-                "Evaluated LLMs, embedding models, vector databases, chunking strategies, and retrieval configurations using systematic experiments and retrieval-quality metrics.",
-                "Improved RAG quality through retrieval and prompt optimization, comparing candidate architectures to support production-oriented model and component selection."
-                ]),
-        models.Experience(
-            company="Sulfate Shargh Co",
-            company_slug="sulfate-shargh",
-            role="Software Engineer Intern",
-            start_date="2022-01-01",
-            end_date="2022-12-31",
-            skills=["Python", "Web Development", "Database Design"],
-            url="https://zincsulfate.co",
-            description=[
-                "Developed Python backend services and REST APIs for data-intensive applications, integrating data-processing and machine-learning components into application workflows.",
-                "Supported machine-learning experiments for workflow optimization, including data preprocessing, model evaluation, performance comparison, and documentation of results."
-                ])
-    ]
-    db.add_all(experiences)
-    db.commit()
+@app.get("/api/educations", response_model=list[EducationSchema], tags=["portfolio"])
+def get_educations(db: Session = Depends(get_db)) -> list[models.Education]:
+    return db.query(models.Education).order_by(
+        models.Education.start_date.desc(),
+        models.Education.id.asc(),
+    ).all()
 
-    educations = [
-        models.Education(
-            institution="University of Bologna",
-            degree="M.Sc. Artificial Intelligence",
-            grade="105/110",
-            start_date="2024-09-01",
-            end_date="2026-07-17",
-            country="Italy"
-        ),
-        models.Education(
-            institution="University of Zanjan",
-            degree="B.Sc. Computer Engineering",
-            grade="16.92/20",
-            start_date="2017-09-01",
-            end_date="2022-05-22",
-            country="Iran"
-        )
-    ]
 
-    db.add_all(educations)
-    db.commit()
+@app.get("/api/experiences", response_model=list[ExperienceSchema], tags=["portfolio"])
+def get_experiences(db: Session = Depends(get_db)) -> list[models.Experience]:
+    return db.query(models.Experience).order_by(
+        models.Experience.start_date.desc(),
+        models.Experience.id.asc(),
+    ).all()
 
-    db.add_all([
-        models.Skill(
-            title="LLM & Generative AI",
-            skills=["RAG", "LangChain", "AI Agents", "Prompt Engineering", "LLM Evaluation", "Vector Databases"],
-            description="Building retrieval, agentic, and evaluation pipelines for production AI.",
-            featured=True,
-        ),
-        models.Skill(
-            title="Backend & Production",
-            skills=["Python", "FastAPI", "REST APIs", "Docker", "Redis", "Celery", "PostgreSQL", "AWS"],
-            description="APIs, asynchronous workloads, containerized services, and scalable infrastructure.",
-        ),
-        models.Skill(
-            title="Machine Learning & Data",
-            skills=["PyTorch", "Scikit-learn", "Pandas", "NumPy", "SQL", "ETL"],
-            description="Experimentation, evaluation, data processing, and model-driven applications.",
-        ),
-        models.Skill(
-            title="Full-Stack & Workflow",
-            skills=["React", "TypeScript", "Git", "CI"],
-            description="Enough frontend and engineering tooling to ship complete AI products.",
-        ),
-    ])
-    db.commit()
 
-    return {"message": "Database seeded successfully!"}
+@app.get("/api/skills", response_model=list[SkillSchema], tags=["portfolio"])
+def get_skills(db: Session = Depends(get_db)) -> list[models.Skill]:
+    return db.query(models.Skill).order_by(models.Skill.id.asc()).all()
+
+
+@app.post(
+    "/api/contact",
+    response_model=ContactResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["contact"],
+)
+def send_contact_message(
+    contact: ContactRequest,
+    _: None = Depends(enforce_contact_rate_limit),
+) -> ContactResponse:
+    if contact.website:
+        return ContactResponse(message="Message received")
+    send_contact_email(contact)
+    return ContactResponse(message="Message sent successfully")
