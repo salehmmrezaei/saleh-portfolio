@@ -26,7 +26,7 @@
   z-index: 10;
   top: 18px;
   right: 2.2vw;
-  bottom: 4rem;
+  bottom: 1.5rem;
   left: 2.2vw;
   pointer-events: none;
 }
@@ -274,7 +274,7 @@ h1 {
 
 @media (max-width: 700px) {
   .topbar { top: 22px; left: 1.5rem; right: 1.5rem; }
-  .site-utility { top: 22px; right: 1.5rem; bottom: 4.5rem; left: 1.5rem; }
+  .site-utility { top: 22px; right: 1.5rem; bottom: 1.5rem; left: 1.5rem; }
   .site-social-links { gap: .9rem; }
   .social-links { gap: .9rem; }
   .hero-content { padding-top: 5rem; }
