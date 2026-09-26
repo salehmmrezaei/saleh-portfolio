@@ -9,6 +9,7 @@ describe('ContactSection', () => {
 
   it('submits the contact form and reports success', async () => {
     render(<ContactSection onBackHome={vi.fn()} />);
+    expect(screen.queryByLabelText('Website')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Saleh' } });
     fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'saleh@example.com' } });
     fireEvent.change(screen.getByLabelText('Subject'), { target: { value: 'Hello' } });
