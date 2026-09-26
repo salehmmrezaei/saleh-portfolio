@@ -235,64 +235,632 @@ export const projectDetails: Record<string, ProjectDetails> = {
     'Mocked AI integration tests, frontend API tests, production builds, linting, and GitHub Actions CI',
   ],
 },
-  'disagreement-aware-sexism-detection': {
-    slug: 'disagreement-aware-sexism-detection',
-    category: 'Multilingual NLP',
-    year: '2023',
-    overview: 'A multilingual transformer system that learns from annotator disagreement using soft labels rather than only majority votes.',
-    problem: 'Majority-vote labels can hide meaningful disagreement and uncertainty in subjective language classification datasets.',
-    pipeline: ['Annotator labels', 'Soft-label training', 'Multilingual classifiers', 'Evaluation ensemble'],
-    stack: {
-      Models: { technologies: ['PyTorch', 'Transformers', 'XLM-RoBERTa'], role: 'Multilingual model training' },
-      Methods: { technologies: ['Soft labels', 'KL divergence'], role: 'Learning from annotator disagreement' },
-      Evaluation: { technologies: ['EXIST 2023 formats'], role: 'Consistent benchmark evaluation' },
+'disagreement-aware-sexism-detection': {
+  slug: 'disagreement-aware-sexism-detection',
+  category: 'Multilingual NLP',
+  year: '2023',
+  role: 'NLP / Machine Learning Engineer',
+  coreStack: [
+    'Python',
+    'PyTorch',
+    'Transformers',
+    'XLM-RoBERTa',
+    'mBERT',
+    'scikit-learn',
+    'Pandas',
+  ],
+  type: 'NLP Research Project',
+
+  overview:
+    'A multilingual sexism detection system that preserves annotator disagreement as probability distributions and trains transformer classifiers to model both the predicted class and the uncertainty in subjective labels.',
+
+  problem:
+    'Subjective language tasks such as sexism detection often contain genuine disagreement between human annotators. Reducing several judgments to a single majority label removes information about ambiguity and treats uncertain examples as if their labels were absolute.\nThis project preserves the full annotator vote distribution, trains multilingual classifiers against those soft targets, and evaluates performance not only globally but also across disagreement levels, languages, errors, and model behavior.',
+
+  pipeline: [
+    {
+      title: 'Disagreement-aware labeling',
+      description:
+        'Convert multiple EXIST 2023 annotator judgments into normalized class distributions while retaining majority labels for conventional classification analysis.',
     },
-    challenges: ['Representing annotator disagreement in training targets', 'Comparing hard-label and soft-label learning', 'Matching official EXIST 2023 evaluation formats'],
-    outcomes: ['English and Spanish sexism classifiers', 'Hard-label and soft-label training objectives', 'Evaluation and ensemble pipelines for EXIST 2023'],
-  },
-  'reinforcement-learning-lab': {
-    slug: 'reinforcement-learning-lab',
-    category: 'Reinforcement learning',
-    year: '2023',
-    overview: 'A collection of classical, deep, multi-agent, and neuromorphic reinforcement-learning experiments.',
-    problem: 'Understanding reinforcement learning requires comparing algorithms across control environments and learning assumptions.',
-    pipeline: ['Environment setup', 'Agent training', 'Policy evaluation', 'Experiment comparison'],
-    stack: {
-      Frameworks: { technologies: ['PyTorch', 'Gymnasium'], role: 'Experiment implementation' },
-      Algorithms: { technologies: ['Q-learning', 'DQN', 'Double DQN'], role: 'Value-based learning methods' },
-      Research: { technologies: ['Multi-Agent RL', 'Neuromorphic models'], role: 'Advanced learning explorations' },
+    {
+      title: 'Multilingual representation learning',
+      description:
+        'Fine-tune XLM-RoBERTa and multilingual BERT on English and Spanish posts using combined mean and max pooling over contextual token representations.',
     },
-    challenges: ['Comparing algorithms across different environments', 'Stabilizing deep value-learning experiments', 'Exploring neuromorphic learning abstractions'],
-    outcomes: ['Reusable Q-learning, DQN, and Double DQN experiments', 'Multi-agent experiments across control environments', 'Hardware-inspired multi-weight spintronic synapse models'],
-  },
-  'time-series-forecasting': {
-    slug: 'time-series-forecasting',
-    category: 'Time-series forecasting',
-    year: '2022',
-    overview: 'An end-to-end machine-learning pipeline for forecasting campus electricity demand from large-scale historical time-series data.',
-    problem: 'Minute-level energy demand is noisy, seasonal, and dependent on time-aware feature construction.',
-    pipeline: ['Time-aware cleaning', 'Lag and rolling features', 'Model comparison', 'Demand forecast'],
-    stack: {
-      Models: { technologies: ['LightGBM', 'XGBoost'], role: 'Demand forecasting models' },
-      Methods: { technologies: ['Time Series', 'Feature Engineering'], role: 'Time-aware data preparation' },
-      Baselines: { technologies: ['Random Forest', 'Baseline models'], role: 'Model comparison reference points' },
+    {
+      title: 'Soft-label optimization',
+      description:
+        'Train the primary models with KL divergence against annotator probability distributions, with a parallel cross-entropy path for hard-label experiments.',
     },
-    challenges: ['Preventing temporal leakage during preprocessing', 'Working with multi-year minute-level data', 'Comparing models with time-aware evaluation'],
-    outcomes: ['Multi-year, minute-level load preprocessing pipeline', 'Compared baseline, Random Forest, XGBoost, and LightGBM', 'LightGBM achieved approximately 4.97% MAPE'],
-  },
-  'news-popularity-prediction': {
-    slug: 'news-popularity-prediction',
-    category: 'Big-data machine learning',
-    year: '2022',
-    overview: 'A PySpark classification project for predicting whether online news articles exceed a target popularity threshold.',
-    problem: 'Large article datasets require scalable preprocessing and a consistent comparison of different classification strategies.',
-    pipeline: ['Distributed preprocessing', 'Feature engineering', 'Classifier training', 'Popularity prediction'],
-    stack: {
-      Platform: { technologies: ['PySpark', 'Spark MLlib'], role: 'Distributed data and ML processing' },
-      Models: { technologies: ['Gradient-Boosted Trees', 'Random Forest', 'Linear SVM'], role: 'Popularity classification' },
-      Analysis: { technologies: ['Machine Learning', 'Big Data'], role: 'Feature and model analysis' },
+    {
+      title: 'Ensemble and diagnostic evaluation',
+      description:
+        'Average model probabilities, write official EXIST prediction files, run benchmark evaluation, and analyze results by disagreement level, language, confidence, and error type.',
     },
-    challenges: ['Building a repeatable distributed ML pipeline', 'Comparing linear, tree-based, and probabilistic models', 'Selecting useful features for popularity prediction'],
-    outcomes: ['Repeatable PySpark preprocessing and feature-engineering pipeline', 'Compared six classification strategies', 'Evaluated popularity threshold predictions at scale'],
+  ],
+
+  stack: {
+    'Models & Training': {
+      technologies: [
+        'PyTorch',
+        'Hugging Face Transformers',
+        'XLM-RoBERTa',
+        'mBERT',
+        'AdamW',
+      ],
+      role:
+        'Multilingual transformer fine-tuning, custom pooling, checkpointing, GPU-aware training, and ensemble probability inference.',
+    },
+
+    'Disagreement Learning': {
+      technologies: [
+        'Soft Labels',
+        'KL Divergence',
+        'Cross Entropy',
+        'Annotator Distributions',
+      ],
+      role:
+        'Preserve human disagreement as probabilistic supervision instead of collapsing every example into a single majority-vote target.',
+    },
+
+    'Evaluation & Analysis': {
+      technologies: [
+        'scikit-learn',
+        'EXIST 2023 Evaluator',
+        'Pandas',
+        'NumPy',
+        'LIME',
+      ],
+      role:
+        'Official benchmark formatting and scoring, hard and soft metrics, disagreement- and language-stratified analysis, error analysis, and local explanations.',
+    },
+
+    Baselines: {
+      technologies: [
+        'TF-IDF',
+        'Logistic Regression',
+        'Soft Voting',
+      ],
+      role:
+        'Provide a classical text-classification reference point and compare it with multilingual transformer-based modeling.',
+    },
   },
+
+  challenges: [
+    {
+      title: 'Preserving subjective supervision',
+      problem:
+        'Majority voting hides whether annotators strongly agreed or were evenly divided, even though that distinction is important in subjective classification.',
+      approach:
+        'Represent each example as an empirical label distribution and optimize predicted probabilities against that distribution with KL divergence rather than discarding minority judgments.',
+    },
+    {
+      title: 'Consistent multilingual evaluation',
+      problem:
+        'English and Spanish examples must share one modeling pipeline while predictions, class ordering, soft probabilities, and evaluation files remain compatible with the official EXIST protocol.',
+      approach:
+        'Use multilingual encoders, enforce a stable label order throughout preprocessing and inference, normalize ensemble probabilities, and generate the exact hard/soft JSON structure required by the official evaluator.',
+    },
+    {
+      title: 'Understanding where the model fails',
+      problem:
+        'A single aggregate score cannot show whether errors come from language differences, ambiguous annotations, low confidence, or systematic model behavior.',
+      approach:
+        'Stratify predictions by annotator disagreement and language, separate false positives and false negatives, inspect confidence margins, analyze annotator demographics, and use LIME for example-level explanations.',
+    },
+  ],
+
+  outcomes: [
+    'Multilingual English-Spanish sexism identification with XLM-RoBERTa and multilingual BERT',
+    'Annotator vote distributions preserved as soft training targets instead of majority labels alone',
+    'KL-divergence soft-label training with a conventional cross-entropy comparison path',
+    'Probability-level ensemble inference with official EXIST 2023 hard and soft prediction output',
+    'TF-IDF and logistic-regression baseline for comparison with transformer models',
+    'Disagreement-, language-, confidence-, and error-stratified evaluation artifacts',
+    'Annotator demographic analysis, LIME explanations, and CPU inference benchmarks',
+  ],
+},
+'reinforcement-learning-lab': {
+  slug: 'reinforcement-learning-lab',
+
+  category: 'Reinforcement Learning',
+
+  year: '2026',
+
+  role: 'Reinforcement Learning / Machine Learning Engineer',
+
+  coreStack: [
+    'Python',
+    'PyTorch',
+    'Gymnasium',
+    'NumPy',
+    'Pandas',
+    'Matplotlib',
+    'TensorBoard',
+  ],
+
+  type: 'Reinforcement Learning Research Project',
+
+  overview:
+    'A reinforcement learning research lab spanning tabular Q-learning, Deep Q-Networks, Double DQN, multi-agent coordination, and hardware-aware neuromorphic learning across classic control and custom gridworld environments.',
+
+  problem:
+    'Reinforcement learning systems behave very differently as the problem moves from discrete state-action tables to neural value functions, multiple interacting agents, and hardware-constrained synaptic representations. A method that works for a small tabular environment may become unstable with function approximation, while multi-agent learning introduces non-stationarity and coordination problems, and physical synaptic hardware cannot directly reproduce arbitrary floating-point optimizer updates.\nThis project brings those settings into one experimental codebase: establish tabular and deep-RL baselines, study stabilization techniques such as replay memory and target networks, compare independent and cooperative multi-agent methods, and then translate learned Q-functions and neural-network weights into conductance-based multi-weight synaptic models.',
+
+  pipeline: [
+    {
+      title: 'Environment modeling and RL baselines',
+
+      description:
+        'Build reproducible experiments around CartPole, FrozenLake, CliffWalking, and MountainCar together with custom cooperative gridworlds, starting from tabular Q-learning and environment-specific observation, reward, and episode handling.',
+    },
+
+    {
+      title: 'Deep value-function learning',
+
+      description:
+        'Train neural Q-functions with PyTorch using epsilon-greedy exploration, experience replay, Bellman targets, checkpointing, and target networks, including Double DQN for MountainCar to separate next-action selection from target-value evaluation.',
+    },
+
+    {
+      title: 'Multi-agent coordination',
+
+      description:
+        'Model cooperative tasks with multiple simultaneous agents and compare independent, parameter-shared, and value-factorization approaches including IQL, PS-DQN, VDN, and QMIX under repeatable multi-seed training and evaluation protocols.',
+    },
+
+    {
+      title: 'Hardware-aware synaptic learning',
+
+      description:
+        'Replace idealized floating-point parameter updates with multi-weight synaptic representations whose effective values are derived from conductance states, resistive switching, magnetoresistance, and gradient-sign-driven update rules.',
+    },
+  ],
+
+  stack: {
+    'RL Algorithms & Training': {
+      technologies: [
+        'PyTorch',
+        'Tabular Q-Learning',
+        'DQN',
+        'Double DQN',
+        'Experience Replay',
+        'Target Networks',
+        'Epsilon-Greedy',
+      ],
+
+      role:
+        'Value-based reinforcement learning, neural Q-function approximation, replay-buffer training, Bellman updates, exploration scheduling, target-network synchronization, checkpointing, and evaluation.',
+    },
+
+    'Multi-Agent Reinforcement Learning': {
+      technologies: [
+        'IQL',
+        'Parameter-Shared DQN',
+        'VDN',
+        'QMIX',
+        'PPO Components',
+        'Centralized Training',
+        'Decentralized Execution',
+      ],
+
+      role:
+        'Cooperative policy learning, independent-agent baselines, parameter sharing, joint-value factorization, centralized state information, decentralized observations, and algorithm comparison.',
+    },
+
+    'Environments & Simulation': {
+      technologies: [
+        'Gymnasium',
+        'CartPole',
+        'FrozenLake',
+        'CliffWalking',
+        'MountainCar',
+        'Custom Gridworlds',
+        'NumPy',
+      ],
+
+      role:
+        'Benchmark control environments, discrete and continuous observations, custom multi-agent meeting and switch-door tasks, reproducible resets, environment wrappers, and task-specific simulation.',
+    },
+
+    'Neuromorphic & Evaluation': {
+      technologies: [
+        'Multi-Weight Synapses',
+        'Spintronic Conductance Modeling',
+        'Memristive Q-Functions',
+        'Pandas',
+        'Matplotlib',
+        'TensorBoard',
+        'pytest',
+      ],
+
+      role:
+        'Hardware-inspired parameter representation, task-specific effective weights, conductance and noise modeling, experiment logging, multi-seed aggregation, weight visualization, reports, and implementation tests.',
+    },
+  },
+
+  challenges: [
+    {
+      title: 'Stabilizing learning across heterogeneous environments',
+
+      problem:
+        'The repository spans discrete gridworlds and classic-control tasks with different observation spaces, reward structures, episode lengths, and learning dynamics, so one training setup cannot be applied unchanged everywhere.',
+
+      approach:
+        'Separate environment-specific behavior from reusable agent logic, use replay memories and epsilon-greedy exploration, introduce target networks for deep value learning, apply Double DQN where overestimation is a concern, and keep seeds, hyperparameters, checkpoints, and evaluation loops explicit for reproducible experiments.',
+    },
+
+    {
+      title: 'Learning coordination between multiple agents',
+
+      problem:
+        'In cooperative environments, each agent changes while the others are learning, making the environment effectively non-stationary; independent policies may fail to coordinate, while parameter sharing can prevent agents from learning sufficiently distinct behavior.',
+
+      approach:
+        'Implement multiple coordination strategies rather than assuming one formulation is universally better: compare independent Q-learning, parameter-shared DQN, VDN, and QMIX on the same meeting task, use shared experimental protocols and multi-seed evaluation, and explore centralized information with decentralized action selection for cooperative environments.',
+    },
+
+    {
+      title: 'Bridging software learning and physical synapses',
+
+      problem:
+        'Standard neural-network optimizers assume continuously adjustable floating-point parameters, while neuromorphic and spintronic devices expose discrete or constrained conductance states, device noise, and task-dependent effective weights.',
+
+      approach:
+        'Represent Q-values and neural parameters through multi-weight synaptic devices, derive effective weights from parallel and antiparallel conductance states, model resistive and magnetoresistive behavior, and use the sign of backpropagated gradients to drive physically motivated crosspoint updates instead of conventional optimizer steps.',
+    },
+  ],
+
+  outcomes: [
+    'Tabular Q-learning, DQN, and Double DQN experiments across CartPole, FrozenLake, CliffWalking, and MountainCar',
+
+    'Modular agents, neural Q-networks, replay memories, environment wrappers, training loops, checkpoints, and evaluation utilities',
+
+    'Double DQN MountainCar training with separate online and target networks for action selection and target evaluation',
+
+    'Cooperative multi-agent experiments covering IQL, parameter-shared DQN, VDN, and QMIX with repeatable multi-seed evaluation',
+
+    'Custom meeting-gridworld and switch-door environments for studying synchronization, cooperation, decentralized observations, and centralized state information',
+
+    'Tabular and deep-RL experiments using multi-weight synaptic, memristive, and spintronic representations instead of conventional software-only weights',
+
+    'Hardware-aware CartPole learning with task-specific conductance-derived weights, gradient-sign updates, device-noise modeling, experiment logs, reports, and weight visualizations',
+  ],
+},
+'time-series-forecasting': {
+  slug: 'time-series-forecasting',
+
+  category: 'Time-Series Forecasting',
+
+  year: '2026',
+
+  role: 'Machine Learning / Data Science Engineer',
+
+  coreStack: [
+    'Python',
+    'Pandas',
+    'NumPy',
+    'scikit-learn',
+    'XGBoost',
+    'LightGBM',
+    'Matplotlib',
+  ],
+
+  type: 'Applied Machine Learning Project',
+
+  overview:
+    'An end-to-end electrical load forecasting pipeline that transforms irregular minute-level campus power data into leakage-safe temporal features and compares ensemble machine learning models for short-term 15-minute load prediction.',
+
+  problem:
+    'Real-world energy data is rarely a clean, uniformly sampled time series. The Savona Campus dataset contains several years of electrical-load measurements with mixed timestamp precision, negative readings, duplicated timestamps, thousands of discontinuities, and missing periods ranging from minutes to multiple weeks.\nThis project was built to turn that noisy historical record into a defensible forecasting dataset without fabricating long stretches of demand, then capture daily, weekly, and recent-load dependencies through temporal feature engineering and evaluate whether machine learning models can outperform a simple historical persistence forecast on genuinely future data.',
+
+  pipeline: [
+    {
+      title: 'Temporal Data Quality Layer',
+
+      description:
+        'Transform irregular minute-level electrical measurements into a trustworthy time series by normalizing mixed timestamp formats, resolving duplicate timestamps, preserving invalid readings as missing values, reconstructing the expected one-minute index, and explicitly measuring missing intervals before any modeling step.',
+    },
+
+    {
+      title: 'Gap-Aware Signal Reconstruction',
+
+      description:
+        'Apply different recovery policies according to gap duration and operational context: interpolate only short interruptions, use bounded forward propagation during stable night-time periods, preserve long outages as unknown rather than synthesizing demand, and aggregate the validated signal into 15-minute forecasting intervals.',
+    },
+
+    {
+      title: 'Leakage-Safe Temporal Feature Layer',
+
+      description:
+        'Convert the cleaned signal into a supervised learning matrix using calendar context, autoregressive lags at 15-minute, hourly, daily, and weekly horizons, and shifted rolling statistics that summarize recent level and volatility without exposing the current target value.',
+    },
+
+    {
+      title: 'Chronological Forecasting & Model Selection',
+
+      description:
+        'Preserve temporal causality with an ordered train/test boundary, establish a previous-week persistence benchmark, train Random Forest, XGBoost, and LightGBM regressors on the same feature space, and compare them using MAE, RMSE, MAPE, prediction traces, and feature-importance analysis.',
+    },
+  ],
+
+  stack: {
+    'Data Processing': {
+      technologies: [
+        'Python',
+        'Pandas',
+        'NumPy',
+        'Datetime Processing',
+        'Interpolation',
+        'Resampling',
+      ],
+
+      role:
+        'Mixed-format timestamp parsing, minute-grid reconstruction, invalid-value handling, duplicate removal, bounded gap filling, long-gap filtering, and 15-minute load aggregation.',
+    },
+
+    'Time-Series Features': {
+      technologies: [
+        'Calendar Features',
+        'Lag Features',
+        'Rolling Means',
+        'Rolling Standard Deviation',
+        'Autoregressive Features',
+      ],
+
+      role:
+        'Encode time-of-day, weekday, seasonality, recent load history, daily recurrence, weekly recurrence, local trends, and recent volatility while preventing target leakage.',
+    },
+
+    'Forecasting Models': {
+      technologies: [
+        'scikit-learn',
+        'Random Forest',
+        'XGBoost',
+        'LightGBM',
+        'Persistence Baseline',
+      ],
+
+      role:
+        'Supervised short-term load forecasting, chronological training, tree-ensemble comparison, gradient boosting, and benchmarking against historical load persistence.',
+    },
+
+    'Evaluation & Analysis': {
+      technologies: [
+        'MAE',
+        'RMSE',
+        'MAPE',
+        'Matplotlib',
+        'Seaborn',
+        'Feature Importance',
+        'Google Colab',
+      ],
+
+      role:
+        'Forecast-error measurement, exploratory analysis, seasonal and outlier inspection, model comparison, prediction visualization, and interpretation of influential temporal predictors.',
+    },
+  },
+
+  challenges: [
+    {
+      title: 'Recovering a Forecastable Signal Without Inventing Data',
+
+      problem:
+        'The source series was not simply incomplete: it contained mixed timestamp precision, duplicate observations, invalid negative measurements, 4,721 discontinuity events, and 179,468 missing minute-level timestamps, including outages extending for days or weeks. Treating every gap with interpolation would create artificial demand patterns and contaminate downstream training.',
+
+      approach:
+        'Reconstruct the complete expected time index first so missingness becomes explicit, then separate short recoverable gaps from long outages. Limit interpolation to short sequences, constrain night-time forward filling to a bounded horizon, and discard unresolved long-gap intervals instead of allowing imputation assumptions to dominate the learned signal.',
+    },
+
+    {
+      title: 'Designing Temporal Features Without Future Leakage',
+
+      problem:
+        'Lag and rolling-window features can produce deceptively strong forecasting results when the current observation or future information leaks into the feature vector. Random train/test splitting introduces the same problem by allowing later temporal regimes into training.',
+
+      approach:
+        'Build all rolling statistics from explicitly shifted series, fit models only on historical observations, retain lag dependencies at operationally meaningful horizons, and evaluate against a strictly later test period so model quality reflects genuine forward prediction rather than temporal contamination.',
+    },
+
+    {
+      title: 'Distinguishing Rare Events From Valid Demand Regimes',
+
+      problem:
+        'A conventional IQR rule identified 7.23% of 15-minute observations as outliers. Removing them mechanically would simplify the distribution but could erase legitimate heating, cooling, or high-activity demand periods—the exact conditions an energy forecasting system must handle reliably.',
+
+      approach:
+        'Treat statistical outlier detection as an analysis tool rather than an automatic deletion rule. Examine when high-load observations occur, preserve plausible seasonal peaks, and allow tree-based models to learn those regimes while evaluating performance against an explicit persistence baseline.',
+    },
+  ],
+
+  outcomes: [
+    'Converted noisy minute-level campus measurements into an explicit 2,988,584-timestamp temporal index, exposing 179,468 previously missing observations across 4,721 gap events',
+
+    'Designed a gap-aware reconstruction strategy that recovers short interruptions while avoiding synthetic reconstruction of multi-day and multi-week outages',
+
+    'Produced a validated 15-minute forecasting dataset with 188,132 usable observations and a final supervised learning matrix of 187,460 samples',
+
+    'Engineered 15 leakage-safe temporal predictors spanning calendar context, short-term autoregression, daily and weekly recurrence, rolling demand levels, and recent volatility',
+
+    'Evaluated models using a true forward holdout: training on historical data through August 2022 and testing on later observations through September 2023',
+
+    'Reduced MAPE from 20.76% with the previous-week persistence benchmark to 5.14% with Random Forest, 4.99% with XGBoost, and 4.97% with LightGBM',
+
+    'Achieved 5.07 MAE and 7.70 RMSE with LightGBM across 37,492 held-out future observations',
+
+    'Confirmed through feature importance that immediate load history, hour-of-day behavior, and daily/weekly recurrence carry the strongest predictive signal',
+  ],
+},
+'news-popularity-prediction': {
+  slug: 'news-popularity-prediction',
+
+  category: 'Big Data Analytics',
+
+  year: '2026',
+
+  role: 'Big Data / Machine Learning Engineer',
+
+  coreStack: [
+    'Python',
+    'PySpark',
+    'Apache Spark',
+    'Spark MLlib',
+    'Pandas',
+    'scikit-learn',
+    'Docker',
+  ],
+
+  type: 'Big Data Machine Learning Project',
+
+  overview:
+    'A Spark-based decision support system for predicting online news popularity before publication, using article-derived features, scalable binary classification, cross-validated model comparison, and feature-level interpretation.',
+
+  problem:
+    'Predicting whether an online article will become popular is difficult because popularity depends on interacting signals from keywords, topic, publication timing, article structure, and previously observed content characteristics rather than one dominant feature. The prediction also needs to be formulated without directly exposing the eventual number of shares to the model.\nThis project treats popularity as a scalable binary classification problem over the Online News Popularity dataset: articles with more than 1,400 shares are labeled popular, leakage-prone identifiers and the original share count are excluded, heterogeneous classifiers are trained through Spark MLlib, and their ranking quality, classification performance, hyperparameters, and important predictive features are compared.',
+
+  pipeline: [
+    {
+      title: 'Leakage-Safe Spark Data Layer',
+
+      description:
+        'Load the 39,644-article dataset into Spark, normalize the schema, derive a binary popularity target from the 1,400-share threshold, inspect class balance, and remove both the final share count and URL identifier before any predictive feature construction.',
+    },
+
+    {
+      title: 'Model-Aware Feature Pipeline',
+
+      description:
+        'Assemble article attributes into Spark ML feature vectors while maintaining preprocessing paths that respect algorithm requirements: standardized vectors for linear and general classifiers, and independently fitted non-negative features for Multinomial and Complement Naive Bayes.',
+    },
+
+    {
+      title: 'Multi-Family Classification Benchmark',
+
+      description:
+        'Evaluate complementary model families rather than a single algorithm class: linear decision boundaries with Logistic Regression and Linear SVC, probabilistic learning with Naive Bayes, standalone tree learning, and nonlinear ensemble methods with Random Forest and Gradient-Boosted Trees.',
+    },
+
+    {
+      title: 'Cross-Validated Selection & Explainability',
+
+      description:
+        'Tune model-specific capacity and regularization parameters through three-fold Spark CrossValidator experiments, evaluate the selected estimators on a fixed held-out partition, and map coefficients and tree importance vectors back to semantic article features for model interpretation.',
+    },
+  ],
+
+  stack: {
+    'Big Data Platform': {
+      technologies: [
+        'Apache Spark 3.5',
+        'PySpark',
+        'Spark DataFrames',
+        'Spark SQL',
+        'Docker',
+        'Docker Compose',
+      ],
+
+      role:
+        'Distributed dataset processing, transformation, model execution, reproducible local Spark infrastructure, and scalable experimentation over the complete news dataset.',
+    },
+
+    'Feature Engineering': {
+      technologies: [
+        'VectorAssembler',
+        'StandardScaler',
+        'MinMaxScaler',
+        'Spark SQL Functions',
+        'Binary Labeling',
+      ],
+
+      role:
+        'Construct model-ready feature vectors, prevent target leakage, fit preprocessing from training data only, standardize heterogeneous numerical attributes, and satisfy model-specific feature constraints.',
+    },
+
+    'Classification & Tuning': {
+      technologies: [
+        'Gradient-Boosted Trees',
+        'Random Forest',
+        'Linear SVC',
+        'Logistic Regression',
+        'Decision Tree',
+        'Naive Bayes',
+        'CrossValidator',
+        'ParamGridBuilder',
+      ],
+
+      role:
+        'Compare ensemble, linear, probabilistic, and tree-based classifiers and tune regularization, ensemble size, tree complexity, boosting iterations, and smoothing through Spark-native cross-validation.',
+    },
+
+    'Evaluation & Interpretation': {
+      technologies: [
+        'ROC-AUC',
+        'Accuracy',
+        'F1 Score',
+        'Precision',
+        'Recall',
+        'Pandas',
+        'Matplotlib',
+        'Seaborn',
+        'scikit-learn',
+      ],
+
+      role:
+        'Evaluate held-out classification behavior, visualize ROC curves, compare tuned models, inspect coefficients and tree importance scores, and perform focused correlation analysis on influential predictors.',
+    },
+  },
+
+  challenges: [
+    {
+      title: 'Constructing a Valid Pre-Publication Target',
+
+      problem:
+        'Popularity is defined using the final number of shares, but that same field is present in the source dataset. If it remains in the feature matrix, the classifier effectively receives the answer during training and evaluation, producing meaningless performance.',
+
+      approach:
+        'Derive the binary target first using the literature-based threshold of more than 1,400 shares, validate the resulting class distribution, and then explicitly remove the raw share count and article URL before feature-vector assembly.',
+    },
+
+    {
+      title: 'Supporting Heterogeneous Models in One Spark Workflow',
+
+      problem:
+        'The candidate algorithms have incompatible assumptions: Naive Bayes requires non-negative features, linear models are sensitive to feature scale, tree ensembles expose different capacity controls, and Linear SVC does not provide the same probability interface used for ROC-based analysis.',
+
+      approach:
+        'Separate preprocessing where mathematically necessary while keeping the train/test boundary common. Fit every scaler only on training data, use MinMaxScaler for Naive Bayes, StandardScaler for the shared vector representation, and evaluate each classifier only with metrics supported by its output semantics.',
+    },
+
+    {
+      title: 'Balancing Predictive Performance With Explainability',
+
+      problem:
+        'A content-popularity classifier is more useful as a decision-support system when it can explain which characteristics influence predictions. Ensemble models improve nonlinear modeling capacity, but their decisions are harder to interpret than those of linear baselines.',
+
+      approach:
+        'Benchmark both interpretable and higher-capacity models, use cross-validation for fair model selection, extract Logistic Regression coefficients and tree-based feature importances, compare recurring top-ranked features across estimators, and analyze correlations among the shared signals.',
+    },
+  ],
+
+  outcomes: [
+    'Built an end-to-end Spark ML classification workflow over 39,644 articles and 61 original dataset attributes',
+
+    'Converted continuous engagement into a literature-aligned binary decision target, yielding a nearly balanced dataset of 19,562 popular and 20,082 unpopular articles',
+
+    'Eliminated direct target leakage by separating label construction from predictive features and removing the original share count before model training',
+
+    'Implemented and compared six Spark MLlib classifiers spanning linear, probabilistic, single-tree, bagging, and boosting approaches',
+
+    'Established reproducible model selection through deterministic 70/30 holdout evaluation and model-specific three-fold cross-validation',
+
+    'Selected a tuned Gradient-Boosted Tree configuration with depth 3 and 100 boosting iterations, reaching 0.7254 ROC-AUC, 66.87% accuracy, and 0.6686 F1 on 11,683 held-out articles',
+
+    'Validated Logistic Regression as a competitive interpretable baseline at approximately 0.7007 ROC-AUC, providing a useful comparison between linear transparency and nonlinear ensemble performance',
+
+    'Identified recurring predictive signals across model families, including keyword statistics, weekend publication, self-reference engagement, topic/channel indicators, article recency, and latent topic features',
+
+    'Packaged the experiments in a reproducible Apache Spark 3.5 environment with fixed dependencies, Docker configuration, cross-validation, ROC analysis, model-comparison visualizations, and feature-level interpretation',
+  ],
+},
 };
