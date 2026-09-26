@@ -555,19 +555,81 @@ this reduces their visual spacing slightly.
    SKILLS
 ========================= */
 
-.skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
-  margin-top: 3.5rem;
+.skills-section {
+  max-width: 1060px;
+  height: 100svh;
+  min-height: 100svh;
+  padding-top: 4.5rem;
+  padding-bottom: 4.5rem;
 }
 
-.skills-list span {
-  padding: .85rem 1.1rem;
-  border: 1px solid #cfd8d3;
+.skills-section .section-heading h2 {
+  margin: .75rem 0 .45rem;
+  font-size: clamp(2.3rem, 4vw, 3.8rem);
+  letter-spacing: -.07em;
+}
+
+.skills-intro {
+  margin: 0;
+  color: #69716f;
+  font-size: clamp(.95rem, 1.5vw, 1.15rem);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.skill-category {
+  min-height: 220px;
+  padding: 1.55rem 1.8rem 1.45rem;
+  border: 1px solid #d2d6d4;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .46);
+  transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
+}
+
+.skill-category:hover {
+  transform: translateY(-3px);
+  border-color: #e1b48e;
+  background: #fff1e6;
+  box-shadow: 0 12px 24px rgba(214, 160, 117, .2);
+}
+
+.skill-category-number {
+  margin: 0;
+  color: #111;
+  font: .78rem 'DM Mono', monospace;
+}
+
+.skill-category h3 {
+  margin: .8rem 0 .85rem;
+  color: #080808;
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  letter-spacing: -.06em;
+}
+
+.skill-category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+
+.skill-category-tags span {
+  padding: .42rem .72rem;
+  border: 1px solid #d0d3d1;
   border-radius: 99px;
-  color: #52615d;
+  color: #242725;
   font-size: .82rem;
+}
+
+.skill-category-description {
+  margin: 1.05rem 0 0;
+  color: #1d211f;
+  font-size: .83rem;
+  line-height: 1.45;
 }
 
 
@@ -1091,6 +1153,21 @@ this reduces their visual spacing slightly.
   .project-grid {
     grid-template-columns: 1fr;
     margin-top: 2.5rem;
+  }
+
+  .skills-section {
+    height: auto;
+    min-height: 100svh;
+    padding-bottom: 5rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+    margin-top: 2.25rem;
+  }
+
+  .skill-category {
+    min-height: 0;
   }
 
   .project-card {

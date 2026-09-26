@@ -4,6 +4,7 @@ import { ExperienceCarousel } from './components/ExperienceCarousel';
 import { ExternalLinkIcon, HomeButton } from './components/Icons';
 import { Hero } from './components/Hero';
 import { ContactSection } from './components/ContactSection';
+import { SkillsGrid } from './components/SkillsGrid';
 import type { Education, Experience, Project } from './types';
 import aboutPhoto from './assets/about-photo.jpg';
 
@@ -87,8 +88,12 @@ function App() {
         <HomeButton onClick={scrollHome} />
       </section>
       <section className="content-section skills-section snap-section" id="skills">
-        <div className="section-heading"><p className="eyebrow">WHAT I WORK WITH</p><h2>Skills</h2></div>
-        <div className="skills-list">{['Python', 'Machine Learning', 'LLMs & RAG', 'FastAPI', 'Docker', 'SQL & Databases', 'React & TypeScript', 'Cloud & Deployment'].map((skill) => <span key={skill}>{skill}</span>)}</div>
+        <div className="section-heading">
+          <p className="eyebrow">WHAT I WORK WITH</p>
+          <h2>Skills &amp; Technologies</h2>
+          <p className="skills-intro">From LLM systems and retrieval pipelines to production-ready backend infrastructure.</p>
+        </div>
+        <SkillsGrid />
         <HomeButton onClick={scrollHome} />
       </section>
       <section className="content-section education-section snap-section" id="education">
