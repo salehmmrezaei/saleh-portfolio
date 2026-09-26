@@ -1,0 +1,106 @@
+.contact-section {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, .75fr) minmax(320px, 1fr);
+  gap: 4rem;
+  align-content: center;
+
+  padding:
+    6rem
+    max(2rem, calc((100% - 1180px) / 2))
+    5rem;
+
+  background: #e7ede9;
+}
+
+.contact-copy p {
+  color: #77837f;
+  font: .72rem 'DM Mono', monospace;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.contact-copy h2 {
+  margin: 1rem 0 0;
+  font-size: clamp(2.5rem, 5vw, 4.8rem);
+  line-height: .98;
+  letter-spacing: -.08em;
+}
+
+.contact-copy h2 span {
+  color: #e87352;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.contact-form label {
+  display: grid;
+  gap: .45rem;
+  color: #52615d;
+  font: .65rem 'DM Mono', monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  border: 1px solid #c3d0ca;
+  border-radius: 8px;
+  padding: .85rem 1rem;
+  background: rgba(255,255,255,.65);
+  color: #192322;
+  font: .9rem 'Manrope', sans-serif;
+  letter-spacing: normal;
+  text-transform: none;
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: 2px solid rgba(108,152,161,.4);
+  border-color: #6c98a1;
+}
+
+.contact-form button {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  padding: .85rem 1.25rem;
+  background: #20312f;
+  color: #fff;
+  cursor: pointer;
+  font: 600 .72rem 'DM Mono', monospace;
+  text-transform: uppercase;
+  transition: transform .2s, background .2s;
+}
+
+.contact-form button:hover {
+  background: #e87352;
+  transform: translateY(-2px);
+}
+
+.contact-section small {
+  grid-column: 1 / -1;
+  display: block;
+  margin-top: 2rem;
+  color: #8d9894;
+  font: .65rem 'DM Mono', monospace;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .contact-section { display: block; padding-top: 5rem; }
+  .contact-copy h2 { margin-bottom: 2rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .contact-section small { margin-top: 3rem; }
+}

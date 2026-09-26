@@ -7,10 +7,10 @@ import sulfateSharghLogo from '../assets/sulfate-shargh-logo.jpeg';
 import zutreLogo from '../assets/zutre-logo.jpeg';
 
 const companyLogos: Record<string, string> = {
-  'CNR (ISMN)': cnrLogo,
-  Zutre: zutreLogo,
-  Denxa: denxaLogo,
-  'Sulfate Shargh Co': sulfateSharghLogo,
+  cnr: cnrLogo,
+  zutre: zutreLogo,
+  denxa: denxaLogo,
+  'sulfate-shargh': sulfateSharghLogo,
 };
 
 export function ExperienceCarousel({ experiences }: { experiences: Experience[] }) {
@@ -27,8 +27,8 @@ export function ExperienceCarousel({ experiences }: { experiences: Experience[] 
         {experiences.map((exp) => (
           <article className="experience-card" key={exp.id}>
             <div className="experience-card-header">
-              {companyLogos[exp.company] ? (
-                <img className="company-logo" src={companyLogos[exp.company]} alt={`${exp.company} logo`} />
+              {companyLogos[exp.company_slug] ? (
+                <img className="company-logo" src={companyLogos[exp.company_slug]} alt={`${exp.company} logo`} />
               ) : (
                 <div className="company-mark" aria-hidden="true">{exp.company.slice(0, 2).toUpperCase()}</div>
               )}

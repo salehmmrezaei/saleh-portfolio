@@ -39,6 +39,7 @@ class ProjectSchema(BaseModel):
 class ExperienceSchema(BaseModel):
     id: int
     company: str
+    company_slug: str
     role: str
     start_date: str
     end_date: str
@@ -57,6 +58,16 @@ class EducationSchema(BaseModel):
     start_date: str
     end_date: str
     country: str
+
+    class Config:
+        from_attributes = True
+
+class SkillSchema(BaseModel):
+    id: int
+    title: str
+    skills: List[str]
+    description: str
+    featured: bool
 
     class Config:
         from_attributes = True
@@ -90,6 +101,11 @@ def get_educations(db: Session = Depends(get_db)):
 @app.get("/api/experiences", response_model=List[ExperienceSchema])
 def get_experiences(db: Session = Depends(get_db)):
     return db.query(models.Experience).all()
+
+# Get all skill categories
+@app.get("/api/skills", response_model=List[SkillSchema])
+def get_skills(db: Session = Depends(get_db)):
+    return db.query(models.Skill).order_by(models.Skill.id).all()
 
 @app.post("/api/contact")
 def send_contact_message(contact: ContactRequest):
@@ -136,6 +152,41 @@ def send_contact_message(contact: ContactRequest):
 @app.post("/api/seed")
 def seed_database(db: Session = Depends(get_db)):
     if db.query(models.Project).first():
+        company_slugs = {
+            "https://www.cnr.it/": "cnr",
+            "https://zutre.com": "zutre",
+            "https://www.denxa.ca": "denxa",
+            "https://zincsulfate.co": "sulfate-shargh",
+        }
+        for experience in db.query(models.Experience).all():
+            if not experience.company_slug and experience.url in company_slugs:
+                experience.company_slug = company_slugs[experience.url]
+        db.commit()
+        if not db.query(models.Skill).first():
+            db.add_all([
+                models.Skill(
+                    title="LLM & Generative AI",
+                    skills=["RAG", "LangChain", "AI Agents", "Prompt Engineering", "LLM Evaluation", "Vector Databases"],
+                    description="Building retrieval, agentic, and evaluation pipelines for production AI.",
+                    featured=True,
+                ),
+                models.Skill(
+                    title="Backend & Production",
+                    skills=["Python", "FastAPI", "REST APIs", "Docker", "Redis", "Celery", "PostgreSQL", "AWS"],
+                    description="APIs, asynchronous workloads, containerized services, and scalable infrastructure.",
+                ),
+                models.Skill(
+                    title="Machine Learning & Data",
+                    skills=["PyTorch", "Scikit-learn", "Pandas", "NumPy", "SQL", "ETL"],
+                    description="Experimentation, evaluation, data processing, and model-driven applications.",
+                ),
+                models.Skill(
+                    title="Full-Stack & Workflow",
+                    skills=["React", "TypeScript", "Git", "CI"],
+                    description="Enough frontend and engineering tooling to ship complete AI products.",
+                ),
+            ])
+            db.commit()
         return {"message": "Database already seeded!"}
     
     projects = [
@@ -163,6 +214,7 @@ def seed_database(db: Session = Depends(get_db)):
     experiences = [
         models.Experience(
             company="CNR (ISMN)",
+            company_slug="cnr",
             role="AI Engineer",
             start_date="2025-11-01",
             end_date="2026-08-31",
@@ -175,6 +227,7 @@ def seed_database(db: Session = Depends(get_db)):
                 ]),
         models.Experience(
             company="Zutre",
+            company_slug="zutre",
             role="R&D AI Engineer",
             start_date="2025-12-01",
             end_date="2026-06-30",
@@ -187,6 +240,7 @@ def seed_database(db: Session = Depends(get_db)):
                 ]),
         models.Experience(
             company="Denxa",
+            company_slug="denxa",
             role="Software Engineer",
             start_date="2022-12-01",
             end_date="2023-05-31",
@@ -199,6 +253,7 @@ def seed_database(db: Session = Depends(get_db)):
                 ]),
         models.Experience(
             company="Sulfate Shargh Co",
+            company_slug="sulfate-shargh",
             role="Software Engineer Intern",
             start_date="2022-01-01",
             end_date="2022-12-31",
@@ -232,6 +287,31 @@ def seed_database(db: Session = Depends(get_db)):
     ]
 
     db.add_all(educations)
+    db.commit()
+
+    db.add_all([
+        models.Skill(
+            title="LLM & Generative AI",
+            skills=["RAG", "LangChain", "AI Agents", "Prompt Engineering", "LLM Evaluation", "Vector Databases"],
+            description="Building retrieval, agentic, and evaluation pipelines for production AI.",
+            featured=True,
+        ),
+        models.Skill(
+            title="Backend & Production",
+            skills=["Python", "FastAPI", "REST APIs", "Docker", "Redis", "Celery", "PostgreSQL", "AWS"],
+            description="APIs, asynchronous workloads, containerized services, and scalable infrastructure.",
+        ),
+        models.Skill(
+            title="Machine Learning & Data",
+            skills=["PyTorch", "Scikit-learn", "Pandas", "NumPy", "SQL", "ETL"],
+            description="Experimentation, evaluation, data processing, and model-driven applications.",
+        ),
+        models.Skill(
+            title="Full-Stack & Workflow",
+            skills=["React", "TypeScript", "Git", "CI"],
+            description="Enough frontend and engineering tooling to ship complete AI products.",
+        ),
+    ])
     db.commit()
 
     return {"message": "Database seeded successfully!"}

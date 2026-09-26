@@ -9,6 +9,7 @@ export interface Project {
 export interface Experience {
   id: number;
   company: string;
+  company_slug: string;
   role: string;
   start_date: string;
   end_date: string;
@@ -21,8 +22,15 @@ export interface Education {
   id: number;
   institution: string;
   degree: string;
-  grade: string;
   start_date: string;
   end_date: string;
   country: string;
+}
+
+export interface SkillCategory {
+  id: number;
+  title: string;
+  skills: string[];
+  description: string;
+  featured: boolean;
 }

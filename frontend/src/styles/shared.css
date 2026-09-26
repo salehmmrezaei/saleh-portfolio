@@ -1,0 +1,11 @@
+.card-date,
+.project-number { color: #e87352; font: .68rem 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+
+.project-card h3,
+.education-row h3 { margin: .5rem 0 .25rem; font-size: 1.35rem; letter-spacing: -.04em; }
+
+.card-company { margin: 0; color: #77837f; }
+.project-card p { color: #65716d; line-height: 1.7; margin: 0; }
+
+.tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.2rem; }
+.tags span { padding: .35rem .65rem; border: 1px solid #dce1dd; border-radius: 99px; color: #77837f; font: .62rem 'DM Mono', monospace; }

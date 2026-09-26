@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from .database import Base
 
@@ -17,6 +17,7 @@ class Experience(Base):
     __tablename__ = "experience"
     id = Column(Integer, primary_key=True, index=True)
     company = Column(String, index=True)
+    company_slug = Column(String, index=True)
     role = Column(String)
     start_date = Column(String)
     end_date = Column(String)
@@ -33,3 +34,11 @@ class Education(Base):
     start_date = Column(String)
     end_date = Column(String)
     country = Column(String)
+
+class Skill(Base):
+    __tablename__ = "skills"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    skills = Column(ARRAY(String), default=[])
+    description = Column(String)
+    featured = Column(Boolean, default=False)
