@@ -22,5 +22,8 @@ describe('ExperienceCarousel', () => {
 
     expect(screen.getByText('CNR (ISMN)')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'CNR (ISMN) logo' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Visit CNR (ISMN) website' })).toHaveAttribute('href', 'https://example.com');
+    expect(screen.getByRole('link', { name: 'CNR (ISMN)' })).toHaveAttribute('href', 'https://example.com');
+    expect(screen.getByText('NOV 2025 — AUG 2026')).toBeInTheDocument();
   });
 });
