@@ -1,0 +1,21 @@
+.education-section {
+  padding-bottom: 9rem;
+}
+
+.education-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #dce1dd;
+  padding: 1.5rem 0;
+}
+
+.education-row p {
+  color: #77837f;
+  font-size: .85rem;
+}
+
+@media (max-width: 700px) {
+  .education-row { display: block; }
+  .education-row > p { margin-top: 1rem; }
+}

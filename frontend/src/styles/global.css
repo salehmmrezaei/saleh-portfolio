@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'Manrope', sans-serif;
+  color: #111;
+  background: #fafafa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+
+/* =========================
+   GENERAL CONTENT SECTION
+========================= */
+
+.content-section {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 6rem 2rem 5rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.empty-state {
+  color: #77837f;
+  padding: 2rem 0;
+}
+
+
+/* =========================
+   PAGE SNAP
+========================= */
+
+.page-shell {
+  height: 100svh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+}
+
+.snap-section {
+  position: relative;
+  min-height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+/* =========================
+   ICONS
+========================= */
+
+.topbar svg,
+.contact-corner svg,
+.social-links svg,
+.external-icon,
+.carousel-controls svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.social-links a {
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.social-links svg {
+  width: 27px;
+  height: 27px;
+  stroke-width: 1.55;
+}
+
+.social-links .linkedin-link {
+  color: #0a66c2;
+}
+
+.social-links .github-link {
+  color: #24292f;
+}
+
+.social-links .email-link {
+  color: #d14836;
+}
+
+.social-links .linkedin-link:hover,
+.social-links .github-link:hover,
+.social-links .email-link:hover {
+  filter: saturate(1.25) brightness(.85);
+}
+
+.contact-corner {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  font-size: .75rem;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: .82;
+  }
+
+  8% {
+    transform: translate(-50%, -50%) scale(1.045);
+    opacity: 1;
+  }
+
+  16% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: .82;
+  }
+
+  24% {
+    transform: translate(-50%, -50%) scale(1.028);
+    opacity: .98;
+  }
+
+  38%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: .82;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-orbit,
+  .cursor {
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-shell { scroll-snap-type: y mandatory; }
+  .snap-section { min-height: 100svh; }
+}

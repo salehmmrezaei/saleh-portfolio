@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { sendContactMessage } from '../api/client';
 import { HomeButton } from './Icons';
 
 export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
@@ -13,26 +14,19 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
     setIsSending(true);
     setStatus(null);
 
-    fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: form.get('name'),
-        email: form.get('email'),
-        subject: form.get('subject'),
-        message: form.get('message'),
-        website: form.get('website'),
-      }),
+    const value = (name: string) => String(form.get(name) ?? '');
+    sendContactMessage({
+      name: value('name'),
+      email: value('email'),
+      subject: value('subject'),
+      message: value('message'),
+      website: value('website'),
     })
-      .then(async (response) => {
-        if (!response.ok) {
-          const data = await response.json().catch(() => null);
-          throw new Error(data?.detail ?? 'Unable to send your message');
-        }
+      .then(() => {
         formElement.reset();
         setStatus({ type: 'success', message: 'Thanks! Your message has been sent.' });
       })
-      .catch((error: Error) => setStatus({ type: 'error', message: error.message }))
+      .catch((error: unknown) => setStatus({ type: 'error', message: error instanceof Error ? error.message : 'Unable to send your message' }))
       .finally(() => setIsSending(false));
   };
 

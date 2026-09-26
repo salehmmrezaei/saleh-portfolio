@@ -1,12 +1,30 @@
+import { useEffect, useState } from 'react';
 import { ContactIcon, GitHubIcon, HomeButton, LinkedInIcon, MailIcon } from './Icons';
 import profileImage from '../assets/profile.png';
 
 interface HeroProps {
-  visibleText: string;
   onBackHome: () => void;
 }
 
-export function Hero({ visibleText, onBackHome }: HeroProps) {
+const rotatingLines = ['Hi, the name\'s Saleh', 'I build intelligent products.', 'I make AI feel useful.'];
+
+export function Hero({ onBackHome }: HeroProps) {
+  const [lineIndex, setLineIndex] = useState(0);
+  const [visibleText, setVisibleText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const line = rotatingLines[lineIndex];
+    const complete = visibleText === line;
+    const timer = window.setTimeout(() => {
+      const next = isDeleting ? line.slice(0, visibleText.length - 1) : line.slice(0, visibleText.length + 1);
+      setVisibleText(next);
+      if (!isDeleting && next === line) setIsDeleting(true);
+      if (isDeleting && next === '') { setIsDeleting(false); setLineIndex((index) => (index + 1) % rotatingLines.length); }
+    }, isDeleting ? 45 : complete ? 1500 : 85);
+    return () => window.clearTimeout(timer);
+  }, [isDeleting, lineIndex, visibleText]);
+
   return (
     <section className="hero snap-section" id="home">
       <nav className="topbar" aria-label="Primary navigation">

@@ -1,0 +1,162 @@
+.experience-section {
+  overflow: hidden;
+}
+
+.experience-section .section-heading {
+  align-items: center;
+  text-align: center;
+}
+
+.experience-section .section-heading .eyebrow {
+  color: #687483;
+  font-size: clamp(1.35rem, 3vw, 2.15rem);
+  font-weight: 500;
+  letter-spacing: .48em;
+}
+
+.experience-carousel {
+  position: relative;
+  margin-top: 2.5rem;
+}
+
+.carousel-controls {
+  position: absolute;
+  right: 0;
+  top: -3.5rem;
+  display: flex;
+  gap: .5rem;
+}
+
+.carousel-controls button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #cfd8d3;
+  border-radius: 50%;
+  background: transparent;
+  color: #52615d;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+
+.carousel-controls button:hover {
+  background: #20312f;
+  color: #fff;
+}
+
+.experience-rail {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: .5rem 0 1.5rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: #aab8b2 transparent;
+}
+
+.experience-rail:focus-visible {
+  outline: 2px solid #e87352;
+  outline-offset: 5px;
+}
+
+.experience-card {
+  flex: 0 0 min(47vw, 665px);
+  min-height: 445px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.8rem 3.2rem 2rem;
+  border: 1px solid rgba(201, 215, 218, .75);
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    #f5fbfc 0%,
+    #e6f0f2 58%,
+    #dce8eb 100%
+  );
+  box-shadow: 0 15px 20px rgba(42, 54, 58, .12);
+  scroll-snap-align: start;
+}
+
+.experience-card-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  min-height: 92px;
+}
+
+.experience-card-header .external-icon {
+  color: #5a9da4;
+}
+
+.company-mark {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: #fff;
+  color: #173a58;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -.12em;
+  box-shadow: 0 2px 10px rgba(54, 77, 83, .1);
+}
+
+.company-logo {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(54, 77, 83, .1);
+}
+
+.experience-card h3 {
+  margin: 1.2rem 0 .25rem;
+  color: #111;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  letter-spacing: -.06em;
+}
+
+.experience-card .card-company {
+  color: #59a99e;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.experience-tags {
+  margin-top: .75rem;
+}
+
+.experience-tags span {
+  background: rgba(255,255,255,.72);
+  border-color: transparent;
+  color: #65717b;
+  font-size: .6rem;
+}
+
+.experience-card .card-date {
+  margin: 1.2rem 0 .8rem;
+  color: #6e7a89;
+  font-size: .68rem;
+}
+
+.experience-description {
+  display: grid;
+  gap: .55rem;
+  margin: 0;
+  padding-left: 1.15rem;
+  color: #171717;
+  font-size: .85rem;
+  line-height: 1.55;
+}
+
+.experience-description li::marker {
+  font-size: .65rem;
+}
+
+@media (max-width: 700px) {
+  .carousel-controls { top: -3.25rem; }
+  .experience-card { flex-basis: 84vw; min-height: 360px; }
+}
