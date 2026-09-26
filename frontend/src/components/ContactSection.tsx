@@ -20,7 +20,7 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
       email: value('email'),
       subject: value('subject'),
       message: value('message'),
-      website: value('website'),
+      website: '',
     })
       .then(() => {
         formElement.reset();
@@ -54,10 +54,6 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
         <label>
           Message
           <textarea name="message" rows={4} placeholder="Tell me about your idea..." required />
-        </label>
-        <label className="honeypot" aria-hidden="true">
-        Website
-        <input name="website" tabIndex={-1} autoComplete="off" />
         </label>
         <button type="submit" disabled={isSending}>{isSending ? 'Sending...' : 'Send message'} <span>↗</span></button>
         {status && <p className={`form-status ${status.type}`} role={status.type === 'error' ? 'alert' : 'status'}>{status.message}</p>}
