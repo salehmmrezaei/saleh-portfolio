@@ -1,19 +1,31 @@
 import { AboutSection } from './components/AboutSection';
 import { ContactSection } from './components/ContactSection';
-import { EducationSection } from './components/EducationSection';
 import { ExperienceSection } from './components/ExperienceSection';
 import { Hero } from './components/Hero';
 import { ProjectsSection } from './components/ProjectsSection';
 import { ProjectDetail } from './components/ProjectDetail';
-import { slugify } from './data/projects';
+import { projectDetails, slugify } from './data/projects';
 import { SkillsSection } from './components/SkillsSection';
+import { GitHubIcon, HomeIcon, LinkedInIcon, MailIcon } from './components/Icons';
 import { usePortfolioData } from './hooks/usePortfolioData';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const { projects, experiences, educations, skills, status } = usePortfolioData();
+  const { projects, experiences, skills, status } = usePortfolioData();
   const [projectSlug, setProjectSlug] = useState(() => window.location.pathname.match(/^\/projects\/([^/]+)$/)?.[1]);
-  const selectedProject = projectSlug ? projects.find((project) => slugify(project.name) === projectSlug) : undefined;
+  const staticProjects = Object.values(projectDetails).map((details, index) => ({
+    id: index + 1,
+    name: details.slug.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join(' '),
+    skills: details.coreStack ?? [],
+    url: `https://github.com/salehmmrezaei/${details.slug}`,
+    description: [details.overview, ...details.outcomes],
+  }));
+  const projectCatalog = staticProjects.map((staticProject) => (
+    projects.find((project) => slugify(project.name) === slugify(staticProject.name)) ?? staticProject
+  ));
+  const selectedProject = projectSlug
+    ? projectCatalog.find((project) => slugify(project.name) === projectSlug)
+    : undefined;
 
   useEffect(() => {
     const onPopState = () => setProjectSlug(window.location.pathname.match(/^\/projects\/([^/]+)$/)?.[1]);
@@ -33,13 +45,13 @@ function App() {
   }, [projectSlug]);
 
   if (selectedProject) {
-    const selectedIndex = projects.findIndex((project) => project.id === selectedProject.id);
+    const selectedIndex = projectCatalog.findIndex((project) => project.id === selectedProject.id);
     const navigate = (slug: string) => { window.history.pushState({}, '', `/projects/${slug}`); setProjectSlug(slug); window.scrollTo(0, 0); };
     const backToProjects = () => {
       window.history.pushState({}, '', '/#projects');
       setProjectSlug(undefined);
     };
-    return <ProjectDetail project={selectedProject} projectIndex={selectedIndex} projects={projects} onNavigate={navigate} onBack={backToProjects} />;
+    return <ProjectDetail project={selectedProject} projectIndex={selectedIndex} projects={projectCatalog} onNavigate={navigate} onBack={backToProjects} />;
   }
 
   const scrollHome = () => {
@@ -52,12 +64,19 @@ function App() {
 
   return (
     <main className="page-shell">
+      <div className="site-utility" aria-label="Social links and home">
+        <div className="site-social-links">
+          <a href="https://www.linkedin.com/in/salehmmrezaei/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedInIcon /></a>
+          <a href="https://github.com/salehmmrezaei" target="_blank" rel="noreferrer" aria-label="GitHub"><GitHubIcon /></a>
+          <a href="mailto:salehmmrezaei@gmail.com" aria-label="Email"><MailIcon /></a>
+        </div>
+        <a className="site-home-link" href="#home" aria-label="Back to home" onClick={(event) => { event.preventDefault(); scrollHome(); }}><HomeIcon /></a>
+      </div>
       <Hero onBackHome={scrollHome} />
       <AboutSection onBackHome={scrollHome} />
       <ExperienceSection experiences={experiences} status={status.experiences} onBackHome={scrollHome} />
       <ProjectsSection projects={projects} status={status.projects} onBackHome={scrollHome} />
       <SkillsSection skills={skills} status={status.skills} onBackHome={scrollHome} />
-      <EducationSection educations={educations} status={status.educations} onBackHome={scrollHome} />
       <ContactSection onBackHome={scrollHome} />
     </main>
   );

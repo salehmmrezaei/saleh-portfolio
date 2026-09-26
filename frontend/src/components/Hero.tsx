@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { ContactIcon, GitHubIcon, HomeButton, LinkedInIcon, MailIcon } from './Icons';
+import { ContactIcon, HomeButton } from './Icons';
 import profileImage from '../assets/profile.png';
 
 interface HeroProps {
   onBackHome: () => void;
 }
 
-const rotatingLines = ['Hi, the name\'s Saleh', 'I build intelligent products.', 'I make AI feel useful.'];
+const rotatingLines = ['Hi, the name\'s Saleh', 'I build intelligent products.', 'I make AI feel useful.', 'I love to solve problems.', 'I am a lifelong learner.'];
 
 export function Hero({ onBackHome }: HeroProps) {
   const [lineIndex, setLineIndex] = useState(0);
@@ -21,18 +21,13 @@ export function Hero({ onBackHome }: HeroProps) {
       setVisibleText(next);
       if (!isDeleting && next === line) setIsDeleting(true);
       if (isDeleting && next === '') { setIsDeleting(false); setLineIndex((index) => (index + 1) % rotatingLines.length); }
-    }, isDeleting ? 45 : complete ? 1500 : 85);
+    }, isDeleting ? 45 : complete ? 2000 : 100);
     return () => window.clearTimeout(timer);
   }, [isDeleting, lineIndex, visibleText]);
 
   return (
     <section className="hero snap-section" id="home">
       <nav className="topbar" aria-label="Primary navigation">
-        <div className="social-links">
-          <a className="linkedin-link" href="https://www.linkedin.com/in/salehmmrezaei/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedInIcon /></a>
-          <a className="github-link" href="https://github.com/salehmmrezaei" target="_blank" rel="noreferrer" aria-label="GitHub"><GitHubIcon /></a>
-          <a className="email-link" href="mailto:salehmmrezaei@gmail.com" aria-label="Email"><MailIcon /></a>
-        </div>
         <a className="contact-corner" href="#contact"><ContactIcon /> Get in touch</a>
       </nav>
       <div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" /><div className="hero-orbit orbit-three" />
