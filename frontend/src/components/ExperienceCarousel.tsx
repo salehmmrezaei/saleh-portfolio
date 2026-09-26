@@ -27,14 +27,19 @@ export function ExperienceCarousel({ experiences }: { experiences: Experience[] 
         {experiences.map((exp) => (
           <article className="experience-card" key={exp.id}>
             <div className="experience-card-header">
-              {companyLogos[exp.company_slug] ? (
-                <img className="company-logo" src={companyLogos[exp.company_slug]} alt={`${exp.company} logo`} />
-              ) : (
-                <div className="company-mark" aria-hidden="true">{exp.company.slice(0, 2).toUpperCase()}</div>
-              )}
+              <a href={exp.url} target="_blank" rel="noreferrer" aria-label={`Visit ${exp.company} website`}>
+                {companyLogos[exp.company_slug] ? (
+                  <img className="company-logo" src={companyLogos[exp.company_slug]} alt={`${exp.company} logo`} />
+                ) : (
+                  <div className="company-mark" aria-hidden="true">{exp.company.slice(0, 2).toUpperCase()}</div>
+                )}
+              </a>
               <a href={exp.url} target="_blank" rel="noreferrer" aria-label={`Open ${exp.company}`}><ExternalLinkIcon /></a>
             </div>
-            <h3>{exp.role}</h3><p className="card-company">{exp.company}</p>
+            <h3>{exp.role}</h3>
+            <p className="card-company">
+              <a href={exp.url} target="_blank" rel="noreferrer">{exp.company}</a>
+            </p>
             <div className="tags experience-tags">{exp.skills.map((skill) => <span key={skill}>{skill}</span>)}</div>
             <p className="card-date">{formatDate(exp.start_date)} — {formatDate(exp.end_date)}</p>
             <ul className="experience-description">{exp.description.map((line) => <li key={line}>{line}</li>)}</ul>
@@ -48,5 +53,5 @@ export function ExperienceCarousel({ experiences }: { experiences: Experience[] 
 function formatDate(value: string) {
   const date = new Date(`${value}T00:00:00`);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
 }
