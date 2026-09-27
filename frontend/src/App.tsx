@@ -20,9 +20,10 @@ function App() {
     url: `https://github.com/salehmmrezaei/${details.slug}`,
     description: [details.overview, ...details.outcomes],
   }));
-  const projectCatalog = staticProjects.map((staticProject) => (
-    projects.find((project) => slugify(project.name) === slugify(staticProject.name)) ?? staticProject
-  ));
+  const projectCatalog = staticProjects.map((staticProject) => {
+    const project = projects.find((candidate) => candidate.url === staticProject.url);
+    return project ? { ...project, name: staticProject.name } : staticProject;
+  });
   const selectedProject = projectSlug
     ? projectCatalog.find((project) => slugify(project.name) === projectSlug)
     : undefined;
@@ -75,7 +76,7 @@ function App() {
       <Hero onBackHome={scrollHome} />
       <AboutSection onBackHome={scrollHome} />
       <ExperienceSection experiences={experiences} status={status.experiences} onBackHome={scrollHome} />
-      <ProjectsSection projects={projects} status={status.projects} onBackHome={scrollHome} />
+      <ProjectsSection projects={projectCatalog} status={status.projects} onBackHome={scrollHome} />
       <SkillsSection skills={skills} status={status.skills} onBackHome={scrollHome} />
       <ContactSection onBackHome={scrollHome} />
     </main>

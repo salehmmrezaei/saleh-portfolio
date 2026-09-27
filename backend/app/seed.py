@@ -6,6 +6,9 @@ from .models import Education, Experience, Project, Skill
 
 def seed() -> None:
     with SessionLocal.begin() as db:
+        for model in (Project, Experience, Education, Skill):
+            db.query(model).delete(synchronize_session=False)
+
         project_data = [
             {
                 "name": "RepoPilot AI",
@@ -28,7 +31,7 @@ def seed() -> None:
                 ],
             },
             {
-                "name": "Learning from Disagreement for Multilingual Sexism Detection",
+                "name": "Disagreement Aware Sexism Detection",
                 "skills": ["PyTorch", "Transformers", "XLM-RoBERTa", "NLP"],
                 "url": "https://github.com/salehmmrezaei/disagreement-aware-sexism-detection",
                 "description": [

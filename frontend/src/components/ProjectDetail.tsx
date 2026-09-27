@@ -27,7 +27,7 @@ export function ProjectDetail({ project, projectIndex, projects, onNavigate, onB
       </div>
       <header className="project-detail-header">
         <div className="project-hero-topline">
-          <p className="project-number">0{project.id}</p>
+          <p className="project-number">{String(projectIndex + 1).padStart(2, '0')}</p>
           <p className="eyebrow">{details.category} · {details.year}</p>
         </div>
         <h1>{project.name}</h1>
