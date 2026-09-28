@@ -11,3 +11,14 @@ backend/.env
 .DS_Store
 __pycache__/
 __pycache__/
+
+# Environment files
+backend/.env
+backend/.env.local
+backend/.env.*
+!backend/.env.example
+
+frontend/.env
+frontend/.env.local
+frontend/.env.*
+!frontend/.env.example
