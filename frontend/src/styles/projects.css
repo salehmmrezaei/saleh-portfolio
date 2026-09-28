@@ -526,7 +526,7 @@
   .content-section,
   .projects-section { padding-top: 5rem; padding-bottom: 5rem; }
 
-  .project-controls { display: flex; justify-content: space-between; margin: 1rem 0 .25rem; }
+  .project-controls { display: flex; justify-content: flex-end; gap: .5rem; margin: 1rem 0 .25rem; }
   .project-rail { grid-auto-columns: 86vw; margin-top: 0; }
   .project-card { min-height: 235px; }
   .project-detail { width: 100%; padding: 2rem 1.25rem 4rem; }
