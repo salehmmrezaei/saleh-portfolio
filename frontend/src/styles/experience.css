@@ -160,7 +160,8 @@
   .carousel-controls {
     position: static;
     justify-content: flex-end;
-    margin-bottom: 1rem;
+    margin-bottom: .25rem;
   }
+  .experience-carousel { margin-top: 1rem; }
   .experience-card { flex-basis: 84vw; min-height: 360px; }
 }

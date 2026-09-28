@@ -29,6 +29,36 @@
   scrollbar-width: thin;
 }
 
+.project-carousel {
+  position: relative;
+}
+
+.project-controls {
+  display: none;
+}
+
+.project-controls button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.project-controls svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .project-rail:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 6px;
@@ -496,7 +526,8 @@
   .content-section,
   .projects-section { padding-top: 5rem; padding-bottom: 5rem; }
 
-  .project-rail { grid-auto-columns: 86vw; margin-top: 2.5rem; }
+  .project-controls { display: flex; justify-content: space-between; margin: 1rem 0 .25rem; }
+  .project-rail { grid-auto-columns: 86vw; margin-top: 0; }
   .project-card { min-height: 235px; }
   .project-detail { width: 100%; padding: 2rem 1.25rem 4rem; }
   .project-detail-nav { margin: -2rem -1.25rem 0; padding-inline: 1.25rem; }

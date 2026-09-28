@@ -273,6 +273,7 @@ h1 {
 }
 
 @media (max-width: 700px) {
+  .section-home { display: none; }
   .topbar { top: 22px; left: 1.5rem; right: 1.5rem; }
   .site-utility { top: 22px; right: 1.5rem; bottom: 1.5rem; left: 1.5rem; }
   .site-social-links { gap: .9rem; }
