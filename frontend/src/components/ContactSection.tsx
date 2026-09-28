@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { sendContactMessage } from '../api/client';
-import { HomeButton } from './Icons';
+import { ChatBubbleIcon, HomeButton } from './Icons';
 
 export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
   const [isSending, setIsSending] = useState(false);
@@ -34,7 +34,7 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
     <footer className="snap-section contact-section" id="contact">
       <div className="contact-copy">
         <p>Have an idea worth building?</p>
-        <h2>Let&apos;s talk <span>↗</span></h2>
+        <h2>Let&apos;s talk <span><ChatBubbleIcon className="contact-chat-icon" /></span></h2>
       </div>
       <form className="contact-form" onSubmit={handleSubmit}>
         <div className="form-row">

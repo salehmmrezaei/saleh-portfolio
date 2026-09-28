@@ -157,6 +157,10 @@
 }
 
 @media (max-width: 700px) {
-  .carousel-controls { top: -3.25rem; }
+  .carousel-controls {
+    position: static;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
   .experience-card { flex-basis: 84vw; min-height: 360px; }
 }

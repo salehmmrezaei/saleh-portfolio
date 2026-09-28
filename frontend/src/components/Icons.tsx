@@ -24,6 +24,15 @@ export function ContactIcon({ className }: IconProps) {
   return <img className={className} src={contactIcon} alt="" aria-hidden="true" />;
 }
 
+export function ChatBubbleIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M7 18.5 3.5 20V6.5A2.5 2.5 0 0 1 6 4h12a2.5 2.5 0 0 1 2.5 2.5v8A2.5 2.5 0 0 1 18 17H7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8.5 9.5h7M8.5 12.5h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function HomeIcon({ className }: IconProps) {
   return <img className={className} src={homeIcon} alt="" aria-hidden="true" />;
 }

@@ -29,6 +29,16 @@
 
 .contact-copy h2 span {
   color: #e87352;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.contact-chat-icon {
+  width: clamp(1.1rem, 2vw, 1.7rem);
+  height: auto;
+  transform: translateY(-.08em);
+  display: block;
 }
 
 .contact-form {
