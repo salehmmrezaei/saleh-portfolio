@@ -1,7 +1,7 @@
 from collections import defaultdict, deque
 from time import monotonic
 from threading import Lock
-
+from .services.turnstile import verify_turnstile_token
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -106,5 +106,8 @@ def send_contact_message(
 ) -> ContactResponse:
     if contact.website:
         return ContactResponse(message="Message received")
+
+    verify_turnstile_token(contact.turnstile_token)
     send_contact_email(contact)
+
     return ContactResponse(message="Message sent successfully")
