@@ -39,3 +39,4 @@ def send_contact_email(contact: ContactRequest) -> None:
         ) from exc
     except urllib_error.URLError as exc:
         raise HTTPException(status_code=502, detail="Unable to reach email provider") from exc
+
