@@ -1,12 +1,9 @@
-from collections import defaultdict, deque
-from time import monotonic
-from threading import Lock
 from .services.turnstile import verify_turnstile_token
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from .middleware.request_size import RequestSizeLimitMiddleware
-
+from .services.rate_limit import enforce_contact_rate_limit
 from . import models
 from .config import get_allowed_origins
 from .database import check_database_connection, get_db
@@ -31,26 +28,6 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
-
-CONTACT_WINDOW_SECONDS = 60
-CONTACT_REQUEST_LIMIT = 5
-contact_requests: defaultdict[str, deque[float]] = defaultdict(deque)
-contact_rate_lock = Lock()
-
-
-def enforce_contact_rate_limit(request: Request) -> None:
-    client = request.client.host if request.client else "unknown"
-    now = monotonic()
-    with contact_rate_lock:
-        attempts = contact_requests[client]
-        while attempts and now - attempts[0] >= CONTACT_WINDOW_SECONDS:
-            attempts.popleft()
-        if len(attempts) >= CONTACT_REQUEST_LIMIT:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many contact requests. Please try again later.",
-            )
-        attempts.append(now)
 
 
 @app.get("/", tags=["system"])
