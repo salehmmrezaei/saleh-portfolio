@@ -1,6 +1,22 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ContactSection } from './ContactSection';
+import { useEffect } from 'react';
+
+vi.mock('./TurnstileWidget', () => ({
+  TurnstileWidget: ({
+    onTokenChange,
+  }: {
+    onTokenChange: (token: string) => void;
+  }) => {
+    useEffect(() => {
+      onTokenChange('test-turnstile-token');
+    }, [onTokenChange]);
+
+    return <div data-testid="turnstile-widget" />;
+  },
+}));
+
 
 describe('ContactSection', () => {
   beforeEach(() => {
