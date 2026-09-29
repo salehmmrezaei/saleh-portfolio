@@ -5,6 +5,7 @@ from .services.turnstile import verify_turnstile_token
 from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from .middleware.request_size import RequestSizeLimitMiddleware
 
 from . import models
 from .config import get_allowed_origins
@@ -18,8 +19,11 @@ from .schemas import (
     SkillSchema,
 )
 from .services.email import send_contact_email
-
 app = FastAPI(title="Saleh Portfolio API", version="1.0.0")
+app.add_middleware(
+    RequestSizeLimitMiddleware,
+    max_body_size=16 * 1024,
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_allowed_origins(),
