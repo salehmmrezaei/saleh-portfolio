@@ -5,7 +5,7 @@ import logging
 from fastapi import HTTPException
 from ..config import get_required_setting
 from ..schemas import ContactRequest
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 def send_contact_email(contact: ContactRequest) -> None:
     api_key = get_required_setting("RESEND_API_KEY")
