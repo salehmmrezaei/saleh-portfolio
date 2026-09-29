@@ -16,7 +16,13 @@ from .schemas import (
     SkillSchema,
 )
 from .services.email import send_contact_email
-app = FastAPI(title="Saleh Portfolio API", version="1.0.0")
+app = FastAPI(
+    title="Saleh Portfolio API",
+    version="1.0.0",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 app.add_middleware(
     RequestSizeLimitMiddleware,
     max_body_size=16 * 1024,
