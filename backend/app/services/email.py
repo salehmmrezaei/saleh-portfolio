@@ -34,10 +34,9 @@ def send_contact_email(contact: ContactRequest) -> None:
                 raise HTTPException(status_code=502, detail="Email provider rejected the message")
     except urllib_error.HTTPError as exc:
         response_body = exc.read().decode("utf-8", errors="replace")
-        logger.error(
-            "Resend rejected email with status %s: %s",
-            exc.code,
-            response_body,
+        print(
+            f"RESEND_ERROR status={exc.code} body={response_body}",
+            flush=True,
         )
         raise HTTPException(
             status_code=502,
