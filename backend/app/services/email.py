@@ -40,7 +40,7 @@ def send_contact_email(contact: ContactRequest) -> None:
         )
         raise HTTPException(
             status_code=502,
-            detail="Email provider rejected the message",
+            detail=f"Email provider rejected the message (Resend HTTP {exc.code})",
         ) from exc
     except urllib_error.URLError as exc:
         raise HTTPException(status_code=502, detail="Unable to reach email provider") from exc
