@@ -81,6 +81,7 @@ export interface ContactPayload {
   subject: string;
   message: string;
   website: string;
+  turnstile_token: string;
 }
 
 export async function sendContactMessage(payload: ContactPayload) {
