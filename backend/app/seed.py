@@ -6,8 +6,6 @@ from .models import Education, Experience, Project, Skill
 
 def seed() -> None:
     with SessionLocal.begin() as db:
-        for model in (Project, Experience, Education, Skill):
-            db.query(model).delete(synchronize_session=False)
 
         project_data = [
             {
@@ -74,10 +72,7 @@ def seed() -> None:
         existing_projects = {
             project.url: project for project in db.query(Project).all()
         }
-        project_urls = {project_values["url"] for project_values in project_data}
-        for project in db.query(Project).all():
-            if project.url not in project_urls:
-                db.delete(project)
+
         for project_values in project_data:
             project = existing_projects.get(project_values["url"])
             if project is None:
@@ -150,49 +145,111 @@ def seed() -> None:
                 for field, value in experience_values.items():
                     setattr(experience, field, value)
 
-        db.add_all([
-            Education(
-                institution="University of Bologna",
-                degree="M.Sc. Artificial Intelligence",
-                grade="105/110",
-                start_date=date(2024, 9, 1),
-                end_date=date(2026, 7, 17),
-                country="Italy",
-            ),
-            Education(
-                institution="University of Zanjan",
-                degree="B.Sc. Computer Engineering",
-                grade="16.92/20",
-                start_date=date(2017, 9, 1),
-                end_date=date(2022, 5, 22),
-                country="Iran",
-            ),
-        ])
 
-        db.add_all([
-            Skill(
-                title="LLM & Generative AI",
-                skills=["RAG", "LangChain", "AI Agents", "Prompt Engineering", "LLM Evaluation", "Vector Databases"],
-                description="Building retrieval, agentic, and evaluation pipelines for production AI.",
-                featured=True,
-            ),
-            Skill(
-                title="Backend & Production",
-                skills=["Python", "FastAPI", "REST APIs", "Docker", "Redis", "Celery", "PostgreSQL", "AWS"],
-                description="APIs, asynchronous workloads, containerized services, and scalable infrastructure.",
-            ),
-            Skill(
-                title="Machine Learning & Data",
-                skills=["PyTorch", "Scikit-learn", "Pandas", "NumPy", "SQL", "ETL"],
-                description="Experimentation, evaluation, data processing, and model-driven applications.",
-            ),
-            Skill(
-                title="Full-Stack & Workflow",
-                skills=["React", "TypeScript", "Git", "CI"],
-                description="Enough frontend and engineering tooling to ship complete AI products.",
-            ),
-        ])
+        education_data = [
+    {
+        "institution": "University of Bologna",
+        "degree": "M.Sc. Artificial Intelligence",
+        "grade": "105/110",
+        "start_date": date(2024, 9, 1),
+        "end_date": date(2026, 7, 17),
+        "country": "Italy",
+    },
+    {
+        "institution": "University of Zanjan",
+        "degree": "B.Sc. Computer Engineering",
+        "grade": "16.92/20",
+        "start_date": date(2017, 9, 1),
+        "end_date": date(2022, 5, 22),
+        "country": "Iran",
+    },
+]
 
+        for education_values in education_data:
+            education = (
+                db.query(Education)
+                .filter_by(
+                    institution=education_values["institution"],
+                    degree=education_values["degree"],
+                )
+                .one_or_none()
+            )
+
+            if education is None:
+                db.add(Education(**education_values))
+            else:
+                for field, value in education_values.items():
+                    setattr(education, field, value)
+        
+        skill_data = [
+            {
+                "title": "LLM & Generative AI",
+                "skills": [
+                    "RAG",
+                    "LangChain",
+                    "AI Agents",
+                    "Prompt Engineering",
+                    "LLM Evaluation",
+                    "Vector Databases",
+                ],
+                "description": "Building retrieval, agentic, and evaluation pipelines for production AI.",
+                "featured": True,
+            },
+            {
+                "title": "Backend & Production",
+                "skills": [
+                    "Python",
+                    "FastAPI",
+                    "REST APIs",
+                    "Docker",
+                    "Redis",
+                    "Celery",
+                    "PostgreSQL",
+                    "AWS",
+                ],
+                "description": "APIs, asynchronous workloads, containerized services, and scalable infrastructure.",
+                "featured": False,
+            },
+            {
+                "title": "Machine Learning & Data",
+                "skills": [
+                    "PyTorch",
+                    "Scikit-learn",
+                    "Pandas",
+                    "NumPy",
+                    "SQL",
+                    "ETL",
+                ],
+                "description": "Experimentation, evaluation, data processing, and model-driven applications.",
+                "featured": False,
+            },
+            {
+                "title": "Full-Stack & Workflow",
+                "skills": [
+                    "React",
+                    "TypeScript",
+                    "Git",
+                    "CI",
+                ],
+                "description": "Enough frontend and engineering tooling to ship complete AI products.",
+                "featured": False,
+            },
+        ]
+
+        for skill_values in skill_data:
+            skill = (
+                db.query(Skill)
+                .filter_by(title=skill_values["title"])
+                .one_or_none()
+            )
+
+            if skill is None:
+                db.add(Skill(**skill_values))
+            else:
+                for field, value in skill_values.items():
+                    setattr(skill, field, value)
+    
+    
     print("Portfolio data seeded successfully.")
 
 
