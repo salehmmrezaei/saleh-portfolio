@@ -12,6 +12,7 @@ def test_contact_request_validates_email_and_limits_fields() -> None:
         email="saleh@example.com",
         subject="Hello",
         message="A message",
+        turnstile_token="test-token",
     )
 
     assert contact.email == "saleh@example.com"
@@ -24,6 +25,7 @@ def test_contact_request_rejects_invalid_email() -> None:
             email="invalid",
             subject="Hello",
             message="A message",
+            turnstile_token="test-token",
         )
 
 
