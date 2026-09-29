@@ -27,6 +27,22 @@ def get_database_url() -> str:
     return database_url
 
 
+def get_migration_database_url() -> str:
+    database_url = os.getenv("MIGRATION_DATABASE_URL")
+
+    if not database_url:
+        return get_database_url()
+
+    if database_url.startswith("postgresql://"):
+        return database_url.replace(
+            "postgresql://",
+            "postgresql+psycopg2://",
+            1,
+        )
+
+    return database_url
+
+
 def get_required_setting(name: str) -> str:
     value = os.getenv(name)
     if not value:
