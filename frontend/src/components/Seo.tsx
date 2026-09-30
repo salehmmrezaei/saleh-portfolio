@@ -8,6 +8,7 @@ interface SeoProps {
 }
 
 const SITE_URL = 'https://salehmmrezaei.com';
+const IMAGE_URL = `${SITE_URL}/saleh-rezaei.png`;
 
 function setMeta(name: string, content: string) {
   let element = document.head.querySelector<HTMLMetaElement>(
@@ -63,7 +64,7 @@ export function Seo({
     document.title = title;
 
     setMeta('description', description);
-    setMeta('robots', 'index, follow');
+    setMeta('robots', 'index, follow, max-image-preview:large');
 
     setCanonical(canonicalUrl);
 
@@ -72,10 +73,13 @@ export function Seo({
     setProperty('og:url', canonicalUrl);
     setProperty('og:type', type);
     setProperty('og:site_name', 'Saleh Rezaei');
+    setProperty('og:image', IMAGE_URL);
+    setProperty('og:image:alt', 'Saleh Rezaei');
 
-    setMeta('twitter:card', 'summary');
+    setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
+    setMeta('twitter:image', IMAGE_URL);
   }, [title, description, canonicalPath, type]);
 
   return null;
