@@ -1,53 +1,6 @@
 import re
-from datetime import date
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator
-
-
-class ProjectSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    name: str
-    skills: list[str]
-    url: AnyHttpUrl
-    description: list[str]
-
-
-class ExperienceSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    company: str
-    company_slug: str
-    role: str
-    start_date: date
-    end_date: date
-    skills: list[str]
-    url: AnyHttpUrl
-    description: list[str]
-
-
-class EducationSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    institution: str
-    degree: str
-    grade: str
-    start_date: date
-    end_date: date
-    country: str
-
-
-class SkillSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    title: str
-    skills: list[str]
-    description: str
-    featured: bool
+from pydantic import BaseModel, Field, field_validator
 
 
 class ContactRequest(BaseModel):

@@ -1,24 +1,35 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, getProjects } from './client';
+import { ApiError, sendContactMessage } from './client';
 
-describe('portfolio API client', () => {
+const payload = {
+  name: 'Saleh',
+  email: 'saleh@example.com',
+  subject: 'Hello',
+  message: 'Test message',
+  website: '',
+  turnstile_token: 'test-token',
+};
+
+describe('API client', () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it('returns validated project data', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify([{
-      id: 1,
-      name: 'Project',
-      skills: ['React'],
-      url: 'https://example.com',
-      description: ['Description'],
-    }]), { status: 200 }));
+  it('returns a validated contact response', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ message: 'Message sent successfully' }), {
+        status: 200,
+      }),
+    );
 
-    await expect(getProjects()).resolves.toHaveLength(1);
+    await expect(sendContactMessage(payload)).resolves.toEqual({
+      message: 'Message sent successfully',
+    });
   });
 
-  it('rejects malformed responses', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ projects: [] }), { status: 200 }));
+  it('rejects malformed contact responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    );
 
-    await expect(getProjects()).rejects.toBeInstanceOf(ApiError);
+    await expect(sendContactMessage(payload)).rejects.toBeInstanceOf(ApiError);
   });
 });
