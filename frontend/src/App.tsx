@@ -11,34 +11,11 @@ import { usePortfolioData } from './hooks/usePortfolioData';
 import { useEffect, useState } from 'react';
 import { Seo } from './components/Seo';
 
-const PROJECT_NAMES: Record<string, string> = {
-  'repopilot-ai': 'RepoPilot AI',
-  'voice-notes-ai': 'Voice Notes AI',
-  'disagreement-aware-sexism-detection': 'Disagreement-Aware Sexism Detection',
-  'reinforcement-learning-lab': 'Reinforcement Learning Lab',
-  'time-series-forecasting': 'Time-Series Forecasting',
-  'news-popularity-prediction': 'News Popularity Prediction',
-};
 
 function App() {
   const { projects, experiences, skills, status } = usePortfolioData();
   const [projectSlug, setProjectSlug] = useState(() => window.location.pathname.match(/^\/projects\/([^/]+)$/)?.[1]);
-  const staticProjects = Object.values(projectDetails).map((details, index) => ({
-    id: index + 1,
-    name:
-      PROJECT_NAMES[details.slug] ??
-      details.slug
-        .split('-')
-        .map((word) => word[0].toUpperCase() + word.slice(1))
-        .join(' '),
-    skills: details.coreStack ?? [],
-    url: `https://github.com/salehmmrezaei/${details.slug}`,
-    description: [details.overview, ...details.outcomes],
-  }));
-  const projectCatalog = staticProjects.map((staticProject) => {
-    const project = projects.find((candidate) => candidate.url === staticProject.url);
-    return project ? { ...project, name: staticProject.name } : staticProject;
-  });
+  const projectCatalog = projects;
   const selectedProject = projectSlug
     ? projectCatalog.find((project) => slugify(project.name) === projectSlug)
     : undefined;
