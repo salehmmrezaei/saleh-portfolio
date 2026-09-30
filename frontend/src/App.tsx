@@ -9,13 +9,28 @@ import { SkillsSection } from './components/SkillsSection';
 import { GitHubIcon, HomeIcon, LinkedInIcon, MailIcon } from './components/Icons';
 import { usePortfolioData } from './hooks/usePortfolioData';
 import { useEffect, useState } from 'react';
+import { Seo } from './components/Seo';
+
+const PROJECT_NAMES: Record<string, string> = {
+  'repopilot-ai': 'RepoPilot AI',
+  'voice-notes-ai': 'Voice Notes AI',
+  'disagreement-aware-sexism-detection': 'Disagreement-Aware Sexism Detection',
+  'reinforcement-learning-lab': 'Reinforcement Learning Lab',
+  'time-series-forecasting': 'Time-Series Forecasting',
+  'news-popularity-prediction': 'News Popularity Prediction',
+};
 
 function App() {
   const { projects, experiences, skills, status } = usePortfolioData();
   const [projectSlug, setProjectSlug] = useState(() => window.location.pathname.match(/^\/projects\/([^/]+)$/)?.[1]);
   const staticProjects = Object.values(projectDetails).map((details, index) => ({
     id: index + 1,
-    name: details.slug.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join(' '),
+    name:
+      PROJECT_NAMES[details.slug] ??
+      details.slug
+        .split('-')
+        .map((word) => word[0].toUpperCase() + word.slice(1))
+        .join(' '),
     skills: details.coreStack ?? [],
     url: `https://github.com/salehmmrezaei/${details.slug}`,
     description: [details.overview, ...details.outcomes],
@@ -45,14 +60,45 @@ function App() {
     });
   }, [projectSlug]);
 
-  if (selectedProject) {
-    const selectedIndex = projectCatalog.findIndex((project) => project.id === selectedProject.id);
-    const navigate = (slug: string) => { window.history.pushState({}, '', `/projects/${slug}`); setProjectSlug(slug); window.scrollTo(0, 0); };
+  if (selectedProject && projectSlug) {
+    const selectedIndex = projectCatalog.findIndex(
+      (project) => project.id === selectedProject.id,
+    );
+
+    const details = projectDetails[projectSlug];
+
+    const navigate = (slug: string) => {
+      window.history.pushState({}, '', `/projects/${slug}`);
+      setProjectSlug(slug);
+      window.scrollTo(0, 0);
+    };
+
     const backToProjects = () => {
       window.history.pushState({}, '', '/#projects');
       setProjectSlug(undefined);
     };
-    return <ProjectDetail project={selectedProject} projectIndex={selectedIndex} projects={projectCatalog} onNavigate={navigate} onBack={backToProjects} />;
+
+    return (
+      <>
+        <Seo
+          title={`${selectedProject.name} | Saleh Rezaei`}
+          description={
+            details?.overview ??
+            `${selectedProject.name} — a project by Saleh Rezaei.`
+          }
+          canonicalPath={`/projects/${projectSlug}`}
+          type="article"
+        />
+
+        <ProjectDetail
+          project={selectedProject}
+          projectIndex={selectedIndex}
+          projects={projectCatalog}
+          onNavigate={navigate}
+          onBack={backToProjects}
+        />
+      </>
+    );
   }
 
   const scrollHome = () => {
@@ -64,7 +110,14 @@ function App() {
   };
 
   return (
-    <main className="page-shell">
+    <>
+      <Seo
+        title="Saleh Rezaei | AI / ML Engineer"
+        description="Saleh Rezaei is an AI/ML engineer building practical AI systems with LLMs, RAG, AI agents, NLP, machine learning, FastAPI, and React."
+        canonicalPath="/"
+      />
+
+      <main className="page-shell">
       <div className="site-utility" aria-label="Social links and home">
         <div className="site-social-links">
           <a href="https://www.linkedin.com/in/salehmmrezaei/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedInIcon /></a>
@@ -79,7 +132,8 @@ function App() {
       <ProjectsSection projects={projectCatalog} status={status.projects} onBackHome={scrollHome} />
       <SkillsSection skills={skills} status={status.skills} onBackHome={scrollHome} />
       <ContactSection onBackHome={scrollHome} />
-    </main>
+      </main>
+    </>
   );
 }
 
