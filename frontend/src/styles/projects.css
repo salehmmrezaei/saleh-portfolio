@@ -104,22 +104,31 @@
 .project-cta {
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
+  justify-content: center;
+
+  padding: .55rem .8rem;
+
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+
   color: var(--accent);
-  font-size: .75rem;
+
+  font-size: .72rem;
   font-weight: 700;
-  letter-spacing: .04em;
+  letter-spacing: .05em;
+  line-height: 1;
   text-transform: uppercase;
+  white-space: nowrap;
+
+  transition:
+    background-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
 }
 
-.project-cta .external-icon {
-  width: 16px;
-  height: 16px;
-  transition: transform .2s ease;
-}
-
-.project-card:hover .project-cta .external-icon {
-  transform: translateX(4px);
+.project-card:hover .project-cta {
+  background: var(--accent);
+  color: var(--bg-primary);
 }
 
 .project-detail {
@@ -275,23 +284,12 @@
   transition: transform .25s ease;
 }
 
-.project-github-arrow {
-  display: inline-block;
-  font-size: 1.1em;
-  line-height: 1;
-  transition: transform .25s ease;
-}
-
 .project-github:hover {
   color: var(--accent-hover);
 }
 
 .project-github:hover .project-github-label::after {
   transform: scaleX(1);
-}
-
-.project-github:hover .project-github-arrow {
-  transform: translate(4px, -3px);
 }
 
 .project-detail-body {
@@ -464,7 +462,7 @@
   text-align: right;
 }
 
-.project-pagination-link > span:not(.project-pagination-arrow) {
+.project-pagination-link > span {
   display: inline-flex;
   flex-direction: column;
   gap: .35rem;
@@ -482,18 +480,50 @@
   color: var(--accent-hover);
 }
 
-.project-pagination-arrow {
+.project-pagination-icon {
   display: inline-block;
-  margin: 0 .65rem;
-  color: var(--accent);
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+
+  background-color: var(--accent);
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+
+  transform: translateY(7px);
   transition: transform .2s ease;
 }
 
-.project-pagination-previous:hover .project-pagination-arrow {
+.project-pagination-previous:hover .project-pagination-icon {
+  transform: translate(-3px, 7px);
+}
+
+.project-pagination-next:hover .project-pagination-icon {
+  transform: translate(3px, 7px);
+}
+
+.project-pagination-icon-previous {
+  -webkit-mask-image: url('../assets/previous.svg');
+  mask-image: url('../assets/previous.svg');
+}
+
+.project-pagination-icon-next {
+  -webkit-mask-image: url('../assets/next.svg');
+  mask-image: url('../assets/next.svg');
+}
+
+.project-pagination-previous:hover {
   transform: translateX(-4px);
 }
 
-.project-pagination-next:hover .project-pagination-arrow {
+.project-pagination-next:hover {
   transform: translateX(4px);
 }
 
@@ -503,8 +533,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-card,
-  .project-cta .external-icon { transition: none; }
+  .project-card {
+    transition: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -556,8 +587,46 @@
   .project-cta,
   .project-github,
   .project-github-label::after,
-  .project-github-arrow,
-  .project-cta .external-icon,
-  .project-pagination-link,
-  .project-pagination-arrow { transition: none; }
+  .project-pagination-link  { transition: none; }
+}
+
+
+.project-github-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+
+  background-color: currentColor;
+
+  -webkit-mask-image: url('../assets/github.svg');
+  mask-image: url('../assets/github.svg');
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+
+  transition: transform .2s ease;
+}
+
+.project-github:hover .project-github-icon {
+  transform: translateY(-1px);
+}
+
+
+.project-nav-github {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.project-nav-github .project-github-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
 }
