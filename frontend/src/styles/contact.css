@@ -99,6 +99,71 @@
   transform: translateY(-2px);
 }
 
+.contact-toast {
+  position: fixed;
+  z-index: 10;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  width: min( calc(100vw - 3rem), 420px);
+  padding: .9rem 1rem;
+  border: 1px solid;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(32, 49, 47, .16);
+  color: #20312f;
+  animation: contact-toast-in .25s ease-out;
+}
+
+.contact-toast.success {
+  border-color: #a8c9b5;
+  background: #eff8f1;
+}
+
+.contact-toast.error {
+  border-color: #e6b4a5;
+  background: #fff3ef;
+}
+
+.contact-toast-icon {
+  display: grid;
+  flex: 0 0 1.4rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #3b8c5a;
+  color: #fff;
+  font: 700 .8rem 'DM Mono', monospace;
+}
+
+.contact-toast.error .contact-toast-icon {
+  background: #d65d3c;
+}
+
+.contact-toast p {
+  flex: 1;
+  margin: 0;
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.contact-toast button {
+  border: 0;
+  padding: .1rem;
+  background: transparent;
+  color: #77837f;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+@keyframes contact-toast-in {
+  from { opacity: 0; transform: translateY(-.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .contact-section small {
   grid-column: 1 / -1;
   display: block;
@@ -113,4 +178,5 @@
   .contact-copy h2 { margin-bottom: 2rem; }
   .form-row { grid-template-columns: 1fr; }
   .contact-section small { margin-top: 3rem; }
+  .contact-toast { top: 1rem; right: 1rem; width: calc(100vw - 2rem); }
 }
