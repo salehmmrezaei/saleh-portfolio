@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { sendContactMessage } from '../api/client';
+import { ApiError, sendContactMessage } from '../api/client';
 import { ChatBubbleIcon, HomeButton } from './Icons';
 import { TurnstileWidget } from './TurnstileWidget';
 
@@ -8,7 +8,20 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [turnstileKey, setTurnstileKey] = useState(0);
-  
+
+  const getErrorMessage = (error: unknown) => {
+    if (!(error instanceof ApiError)) {
+      return 'We couldn’t connect to the contact service. Please try again.';
+    }
+
+    if (error.status === 400) return 'Human verification failed. Please try again.';
+    if (error.status === 422) return 'Please check your details and try again.';
+    if (error.status === 429) return 'You’ve sent too many messages. Please wait a minute and try again.';
+    if (error.status === 502) return 'We couldn’t send your message right now. Please try again in a moment.';
+    if (error.status === 503) return 'The contact service is temporarily unavailable. Please try again shortly.';
+    return 'Something went wrong while sending your message. Please try again.';
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSending || !turnstileToken) return;
@@ -28,9 +41,9 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
     })
       .then(() => {
         formElement.reset();
-        setStatus({ type: 'success', message: 'Thanks! Your message has been sent.' });
+        setStatus({ type: 'success', message: 'Thanks for your message! I’ll get back to you soon.' });
       })
-      .catch((error: unknown) => setStatus({ type: 'error', message: error instanceof Error ? error.message : 'Unable to send your message' }))
+      .catch((error: unknown) => setStatus({ type: 'error', message: getErrorMessage(error) }))
       .finally(() => {
         setIsSending(false);
         setTurnstileToken('');
@@ -74,8 +87,14 @@ export function ContactSection({ onBackHome }: { onBackHome: () => void }) {
       >
         {isSending ? 'Sending...' : 'Send message'} <span>↗</span>
       </button>
-        {status && <p className={`form-status ${status.type}`} role={status.type === 'error' ? 'alert' : 'status'}>{status.message}</p>}
       </form>
+      {status && (
+        <div className={`contact-toast ${status.type}`} role={status.type === 'error' ? 'alert' : 'status'} aria-live="polite">
+          <span className="contact-toast-icon" aria-hidden="true">{status.type === 'success' ? '✓' : '!'}</span>
+          <p>{status.message}</p>
+          <button type="button" onClick={() => setStatus(null)} aria-label="Dismiss notification">×</button>
+        </div>
+      )}
       <small>© {new Date().getFullYear()} Saleh Rezaei</small>
       <HomeButton onClick={onBackHome} />
     </footer>
