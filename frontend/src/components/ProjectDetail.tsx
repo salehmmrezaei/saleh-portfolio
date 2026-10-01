@@ -22,7 +22,15 @@ export function ProjectDetail({ project, projectIndex, projects, onNavigate, onB
       <div className="project-detail-nav">
         <button type="button" className="project-back" onClick={onBack}>← Back to projects</button>
         <div className="project-detail-nav-links">
-          <a href={project.url} target="_blank" rel="noreferrer">GitHub ↗</a>
+          <a
+            className="project-nav-github"
+            href={project.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>Source Code</span>
+            <span className="project-github-icon" aria-hidden="true" />
+          </a>
         </div>
       </div>
       <header className="project-detail-header">
@@ -38,10 +46,16 @@ export function ProjectDetail({ project, projectIndex, projects, onNavigate, onB
           <div><span>Type</span><strong>{projectType}</strong></div>
           <div><span>Year</span><strong>{details.year}</strong></div>
         </div>
-        <a className="project-github" href={project.url} target="_blank" rel="noreferrer">
+        <a
+          className="project-github"
+          href={project.url}
+          target="_blank"
+          rel="noreferrer"
+        >
           <span className="project-github-label">View source on GitHub</span>
-          <span className="project-github-arrow" aria-hidden="true">↗</span>
+          <span className="project-github-icon" aria-hidden="true" />
         </a>
+
       </header>
 
       <div className="project-detail-layout">
@@ -91,16 +105,39 @@ export function ProjectDetail({ project, projectIndex, projects, onNavigate, onB
         </div>
       </div>
 
-      <nav className="project-pagination" aria-label="Project navigation">
-        <button className="project-pagination-link project-pagination-previous" type="button" onClick={() => onNavigate(slugify(previous.name))}>
-          <span className="project-pagination-arrow" aria-hidden="true">←</span>
-          <span><small>Previous project</small>{previous.name}</span>
-        </button>
-        <button className="project-pagination-link project-pagination-next" type="button" onClick={() => onNavigate(slugify(next.name))}>
-          <span><small>Next project</small>{next.name}</span>
-          <span className="project-pagination-arrow" aria-hidden="true">→</span>
-        </button>
-      </nav>
+    <nav className="project-pagination" aria-label="Project navigation">
+      <button
+        className="project-pagination-link project-pagination-previous"
+        type="button"
+        onClick={() => onNavigate(slugify(previous.name))}
+      >
+        <span
+          className="project-pagination-icon project-pagination-icon-previous"
+          aria-hidden="true"
+        />
+
+        <span>
+          <small>Previous project</small>
+          {previous.name}
+        </span>
+      </button>
+
+      <button
+        className="project-pagination-link project-pagination-next"
+        type="button"
+        onClick={() => onNavigate(slugify(next.name))}
+      >
+        <span>
+          <small>Next project</small>
+          {next.name}
+        </span>
+
+        <span
+          className="project-pagination-icon project-pagination-icon-next"
+          aria-hidden="true"
+        />
+      </button>
+    </nav>
     </main>
   );
 }
