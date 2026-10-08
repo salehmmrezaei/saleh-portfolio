@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 from functools import lru_cache
 
 from fastapi import HTTPException, Request, status
@@ -11,6 +12,7 @@ CONTACT_REQUEST_LIMIT = 5
 
 CHAT_WINDOW_SECONDS = 60
 CHAT_REQUEST_LIMIT = 6
+CHAT_DAILY_REQUEST_LIMIT = 250
 
 RATE_LIMIT_SCRIPT = """
 local current = redis.call("INCR", KEYS[1])
@@ -50,6 +52,42 @@ def _get_client_ip(request: Request) -> str:
     return "unknown"
 
 
+def _get_daily_chat_request_limit() -> int:
+    raw_value = os.getenv(
+        "CHAT_DAILY_REQUEST_LIMIT",
+        str(CHAT_DAILY_REQUEST_LIMIT),
+    )
+
+    try:
+        value = int(raw_value)
+    except ValueError as exc:
+        raise RuntimeError(
+            "CHAT_DAILY_REQUEST_LIMIT must be an integer"
+        ) from exc
+
+    if value < 1:
+        raise RuntimeError(
+            "CHAT_DAILY_REQUEST_LIMIT must be positive"
+        )
+
+    return value
+
+
+def _increment_counter(
+    *,
+    key: str,
+    window_seconds: int,
+) -> int:
+    return int(
+        _get_redis().eval(
+            RATE_LIMIT_SCRIPT,
+            1,
+            key,
+            window_seconds,
+        )
+    )
+
+
 def _enforce_rate_limit(
     request: Request,
     *,
@@ -63,13 +101,9 @@ def _enforce_rate_limit(
     key = f"rate-limit:{scope}:{client_ip}"
 
     try:
-        count = int(
-            _get_redis().eval(
-                RATE_LIMIT_SCRIPT,
-                1,
-                key,
-                window_seconds,
-            )
+        count = _increment_counter(
+            key=key,
+            window_seconds=window_seconds,
         )
 
         if count > request_limit:
@@ -88,14 +122,60 @@ def _enforce_rate_limit(
         ) from exc
 
 
+def _enforce_daily_chat_limit() -> None:
+    now = datetime.now(timezone.utc)
+
+    seconds_since_midnight = (
+        now.hour * 3600
+        + now.minute * 60
+        + now.second
+    )
+
+    seconds_until_midnight = max(
+        1,
+        24 * 60 * 60 - seconds_since_midnight,
+    )
+
+    key = f"budget:chat:{now.date().isoformat()}"
+
+    try:
+        count = _increment_counter(
+            key=key,
+            window_seconds=seconds_until_midnight,
+        )
+
+        if count > _get_daily_chat_request_limit():
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=(
+                    "Daily chat capacity has been reached. "
+                    "Please try again tomorrow."
+                ),
+            )
+
+    except HTTPException:
+        raise
+
+    except (RedisError, RuntimeError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Chat service is temporarily unavailable.",
+        ) from exc
+
+
 def enforce_contact_rate_limit(request: Request) -> None:
     _enforce_rate_limit(
         request,
         scope="contact",
         window_seconds=CONTACT_WINDOW_SECONDS,
         request_limit=CONTACT_REQUEST_LIMIT,
-        limit_detail="Too many contact requests. Please try again later.",
-        unavailable_detail="Contact service is temporarily unavailable.",
+        limit_detail=(
+            "Too many contact requests. "
+            "Please try again later."
+        ),
+        unavailable_detail=(
+            "Contact service is temporarily unavailable."
+        ),
     )
 
 
@@ -105,6 +185,13 @@ def enforce_chat_rate_limit(request: Request) -> None:
         scope="chat",
         window_seconds=CHAT_WINDOW_SECONDS,
         request_limit=CHAT_REQUEST_LIMIT,
-        limit_detail="Too many chat requests. Please try again later.",
-        unavailable_detail="Chat service is temporarily unavailable.",
+        limit_detail=(
+            "Too many chat requests. "
+            "Please try again later."
+        ),
+        unavailable_detail=(
+            "Chat service is temporarily unavailable."
+        ),
     )
+
+    _enforce_daily_chat_limit()

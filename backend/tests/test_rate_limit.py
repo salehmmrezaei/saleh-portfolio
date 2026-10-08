@@ -136,3 +136,55 @@ def test_chat_rejects_seventh_request_per_ip(
     assert response.json() == {
         "detail": "Too many chat requests. Please try again later."
     }
+
+
+def test_chat_daily_limit_is_global_across_ips(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.services.rate_limit import enforce_chat_rate_limit
+
+    fake_redis = FakeRedis()
+
+    monkeypatch.setattr(
+        rate_limit,
+        "_get_redis",
+        lambda: fake_redis,
+    )
+    monkeypatch.setenv(
+        "CHAT_DAILY_REQUEST_LIMIT",
+        "2",
+    )
+
+    app = FastAPI()
+
+    @app.get("/chat-daily-test")
+    def chat_endpoint(
+        _: None = Depends(enforce_chat_rate_limit),
+    ) -> dict[str, str]:
+        return {"status": "ok"}
+
+    client = TestClient(app)
+
+    first = client.get(
+        "/chat-daily-test",
+        headers={"X-Real-IP": "203.0.113.1"},
+    )
+    second = client.get(
+        "/chat-daily-test",
+        headers={"X-Real-IP": "203.0.113.2"},
+    )
+    third = client.get(
+        "/chat-daily-test",
+        headers={"X-Real-IP": "203.0.113.3"},
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+
+    assert third.status_code == 429
+    assert third.json() == {
+        "detail": (
+            "Daily chat capacity has been reached. "
+            "Please try again tomorrow."
+        )
+    }
