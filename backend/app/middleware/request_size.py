@@ -6,11 +6,11 @@ class RequestSizeLimitMiddleware:
         self,
         app: ASGIApp,
         max_body_size: int,
-        path: str = "/api/contact",
+        paths: tuple[str, ...] = ("/api/contact",),
     ) -> None:
         self.app = app
         self.max_body_size = max_body_size
-        self.path = path
+        self.paths = set(paths)
 
     async def __call__(
         self,
@@ -18,7 +18,10 @@ class RequestSizeLimitMiddleware:
         receive: Receive,
         send: Send,
     ) -> None:
-        if scope["type"] != "http" or scope.get("path") != self.path:
+        if (
+            scope["type"] != "http"
+            or scope.get("path") not in self.paths
+        ):
             await self.app(scope, receive, send)
             return
 
@@ -75,10 +78,14 @@ class RequestSizeLimitMiddleware:
                 "status": 413,
                 "headers": [
                     (b"content-type", b"application/json"),
-                    (b"content-length", str(len(body)).encode()),
+                    (
+                        b"content-length",
+                        str(len(body)).encode(),
+                    ),
                 ],
             }
         )
+
         await send(
             {
                 "type": "http.response.body",
