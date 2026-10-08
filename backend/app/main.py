@@ -4,9 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import get_allowed_origins
 from .database import check_database_connection
 from .middleware.request_size import RequestSizeLimitMiddleware
-from .schemas import ContactRequest, ContactResponse
+from .schemas import (
+    ChatRequest,
+    ChatResponse,
+    ContactRequest,
+    ContactResponse,
+)
+from .services.chat import generate_chat_answer
 from .services.email import send_contact_email
-from .services.rate_limit import enforce_contact_rate_limit
+from .services.rate_limit import (
+    enforce_chat_rate_limit,
+    enforce_contact_rate_limit,
+)
 from .services.turnstile import verify_turnstile_token
 
 app = FastAPI(
@@ -72,3 +81,18 @@ def send_contact_message(
     send_contact_email(contact)
 
     return ContactResponse(message="Message sent successfully")
+
+
+@app.post(
+    "/api/chat",
+    response_model=ChatResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["chat"],
+)
+def chat(
+    request: ChatRequest,
+    _: None = Depends(enforce_chat_rate_limit),
+) -> ChatResponse:
+    return ChatResponse(
+        answer=generate_chat_answer(request),
+    )
