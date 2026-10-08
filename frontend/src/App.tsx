@@ -10,6 +10,7 @@ import { GitHubIcon, HomeIcon, LinkedInIcon, MailIcon } from './components/Icons
 import { usePortfolioData } from './hooks/usePortfolioData';
 import { useEffect, useState } from 'react';
 import { Seo } from './components/Seo';
+import { ChatWidget } from './components/ChatWidget';
 
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
           onNavigate={navigate}
           onBack={backToProjects}
         />
+        <ChatWidget />
       </>
     );
   }
@@ -110,6 +112,7 @@ function App() {
       <SkillsSection skills={skills} status={status.skills} onBackHome={scrollHome} />
       <ContactSection onBackHome={scrollHome} />
       </main>
+      <ChatWidget />
     </>
   );
 }

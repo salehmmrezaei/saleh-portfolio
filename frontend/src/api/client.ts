@@ -58,3 +58,33 @@ export async function sendContactMessage(payload: ContactPayload) {
     },
   );
 }
+
+
+export interface ChatTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatPayload {
+  message: string;
+  history: ChatTurn[];
+}
+
+export interface ChatResponse {
+  answer: string;
+}
+
+export async function sendChatMessage(
+  payload: ChatPayload,
+): Promise<ChatResponse> {
+  return request(
+    '/chat',
+    (value): value is ChatResponse =>
+      isRecord(value) && typeof value.answer === 'string',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    },
+  );
+}

@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, sendContactMessage } from './client';
+import {
+  ApiError,
+  sendChatMessage,
+  sendContactMessage,
+} from './client';
+
 
 const payload = {
   name: 'Saleh',
@@ -32,4 +37,43 @@ describe('API client', () => {
 
     await expect(sendContactMessage(payload)).rejects.toBeInstanceOf(ApiError);
   });
+});
+
+
+it('returns a validated chat response', async () => {
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        answer: 'Saleh has experience with RAG systems.',
+      }),
+      { status: 200 },
+    ),
+  );
+
+  await expect(
+    sendChatMessage({
+      message: 'What experience does Saleh have with RAG?',
+      history: [],
+    }),
+  ).resolves.toEqual({
+    answer: 'Saleh has experience with RAG systems.',
+  });
+});
+
+it('rejects malformed chat responses', async () => {
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        message: 'wrong shape',
+      }),
+      { status: 200 },
+    ),
+  );
+
+  await expect(
+    sendChatMessage({
+      message: 'Tell me about Saleh.',
+      history: [],
+    }),
+  ).rejects.toBeInstanceOf(ApiError);
 });
