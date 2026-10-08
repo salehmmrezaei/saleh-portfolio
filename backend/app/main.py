@@ -20,6 +20,7 @@ app = FastAPI(
 app.add_middleware(
     RequestSizeLimitMiddleware,
     max_body_size=16 * 1024,
+    paths=("/api/contact", "/api/chat"),
 )
 
 app.add_middleware(

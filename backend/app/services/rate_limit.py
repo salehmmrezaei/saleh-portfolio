@@ -9,6 +9,9 @@ from redis.exceptions import RedisError
 CONTACT_WINDOW_SECONDS = 60
 CONTACT_REQUEST_LIMIT = 5
 
+CHAT_WINDOW_SECONDS = 60
+CHAT_REQUEST_LIMIT = 6
+
 RATE_LIMIT_SCRIPT = """
 local current = redis.call("INCR", KEYS[1])
 
@@ -47,33 +50,61 @@ def _get_client_ip(request: Request) -> str:
     return "unknown"
 
 
-def enforce_contact_rate_limit(request: Request) -> None:
+def _enforce_rate_limit(
+    request: Request,
+    *,
+    scope: str,
+    window_seconds: int,
+    request_limit: int,
+    limit_detail: str,
+    unavailable_detail: str,
+) -> None:
     client_ip = _get_client_ip(request)
-    key = f"rate-limit:contact:{client_ip}"
+    key = f"rate-limit:{scope}:{client_ip}"
 
     try:
-        redis_client = _get_redis()
-
         count = int(
-            redis_client.eval(
+            _get_redis().eval(
                 RATE_LIMIT_SCRIPT,
                 1,
                 key,
-                CONTACT_WINDOW_SECONDS,
+                window_seconds,
             )
         )
 
-        if count > CONTACT_REQUEST_LIMIT:
+        if count > request_limit:
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many contact requests. Please try again later.",
+                detail=limit_detail,
             )
 
     except HTTPException:
         raise
 
-    except RedisError as exc:
+    except (RedisError, RuntimeError) as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Contact service is temporarily unavailable.",
+            detail=unavailable_detail,
         ) from exc
+
+
+def enforce_contact_rate_limit(request: Request) -> None:
+    _enforce_rate_limit(
+        request,
+        scope="contact",
+        window_seconds=CONTACT_WINDOW_SECONDS,
+        request_limit=CONTACT_REQUEST_LIMIT,
+        limit_detail="Too many contact requests. Please try again later.",
+        unavailable_detail="Contact service is temporarily unavailable.",
+    )
+
+
+def enforce_chat_rate_limit(request: Request) -> None:
+    _enforce_rate_limit(
+        request,
+        scope="chat",
+        window_seconds=CHAT_WINDOW_SECONDS,
+        request_limit=CHAT_REQUEST_LIMIT,
+        limit_detail="Too many chat requests. Please try again later.",
+        unavailable_detail="Chat service is temporarily unavailable.",
+    )

@@ -1,4 +1,5 @@
 import re
+from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -21,3 +22,37 @@ class ContactRequest(BaseModel):
 
 class ContactResponse(BaseModel):
     message: str
+
+
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=1600)
+
+    @field_validator("content")
+    @classmethod
+    def validate_content(cls, value: str) -> str:
+        value = value.strip()
+
+        if not value:
+            raise ValueError("Chat content cannot be blank")
+
+        return value
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=800)
+    history: list[ChatTurn] = Field(default_factory=list, max_length=6)
+
+    @field_validator("message")
+    @classmethod
+    def validate_message(cls, value: str) -> str:
+        value = value.strip()
+
+        if not value:
+            raise ValueError("Message cannot be blank")
+
+        return value
+
+
+class ChatResponse(BaseModel):
+    answer: str
