@@ -13,7 +13,7 @@
 
 .topbar {
   position: absolute;
-  z-index: 3;
+  z-index: 20;
   top: 18px;
   left: 2.2vw;
   right: 4.3vw;
@@ -110,6 +110,9 @@
 }
 
 .contact-corner {
+  position: relative;
+  z-index: 21;
+  pointer-events: auto;
   margin-left: auto;
   color: #939393;
   font: 500 .68rem 'DM Mono', monospace;
