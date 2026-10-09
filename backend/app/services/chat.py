@@ -9,7 +9,7 @@ from openai import (
     OpenAI,
 )
 
-from ..chat_knowledge import PORTFOLIO_KNOWLEDGE
+from .knowledge_context import build_chat_knowledge_context
 from ..config import get_required_setting
 from ..schemas import ChatRequest
 
@@ -21,12 +21,23 @@ SYSTEM_INSTRUCTIONS = """
 You are the portfolio assistant for Saleh Rezaei's personal website.
 
 Your allowed scope is Saleh Rezaei's professional background, projects,
-skills, education, engineering experience, and reasonable comparisons
-between that background and a role described by the user.
+skills, education, engineering experience, professional interests,
+availability, work authorization, public contact information, personal
+technical interests, and reasonable comparisons between that background
+and a role described by the user.
 
 Rules:
-- Use only the portfolio reference supplied below plus information the
-  user explicitly provides in the conversation.
+- Use only the supplied portfolio knowledge plus information the user
+  explicitly provides in the conversation.
+- `profile_facts` contains deterministic portfolio facts. Prefer these
+  for exact facts such as availability, work authorization, education,
+  experience, public contact information, and personal interests.
+- `retrieved_chunks` contains ranked hybrid-search results. Use the most
+  relevant chunks for project and technical questions.
+- Retrieval rank indicates relevance, not certainty. Never invent or
+  infer a fact that is not supported by the supplied knowledge.
+- The supplied knowledge is intentionally bounded and may omit unrelated
+  sections. Do not assume omitted sections contain any fact.
 - Never invent employers, dates, degrees, projects, skills, metrics,
   achievements, publications, certifications, or personal details.
 - If the reference does not contain the answer, say that the information
@@ -48,7 +59,7 @@ Rules:
 def _get_openai_client() -> OpenAI:
     return OpenAI(
         api_key=get_required_setting("OPENAI_API_KEY"),
-        timeout=12.0,
+        timeout=20.0,
         max_retries=0,
     )
 
@@ -80,11 +91,13 @@ def _build_input(payload: ChatRequest) -> list[dict[str, str]]:
 
 
 def generate_chat_answer(payload: ChatRequest) -> str:
+    knowledge_context = build_chat_knowledge_context(payload)
+
     instructions = (
         f"{SYSTEM_INSTRUCTIONS}\n\n"
-        "<portfolio_reference>\n"
-        f"{PORTFOLIO_KNOWLEDGE}\n"
-        "</portfolio_reference>"
+        "<portfolio_knowledge>\n"
+        f"{knowledge_context}\n"
+        "</portfolio_knowledge>"
     )
 
     try:

@@ -1,7 +1,10 @@
+import os
 from types import SimpleNamespace
 
 import pytest
 from fastapi import HTTPException
+
+os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 
 from app.schemas import ChatRequest
 from app.services import chat
@@ -33,6 +36,21 @@ def test_generate_chat_answer_uses_bounded_request(
         chat,
         "_get_openai_client",
         lambda: client,
+    )
+    monkeypatch.setattr(
+        chat,
+        "build_chat_knowledge_context",
+        lambda payload: (
+            '{"profile_facts":{},'
+            '"retrieved_chunks":['
+            '{"rank":1,'
+            '"source_type":"project",'
+            '"source_key":"repopilot-ai",'
+            '"section":"overview",'
+            '"title":"RepoPilot AI — Overview",'
+            '"content":"RepoPilot AI uses hybrid retrieval."}'
+            ']}'
+        ),
     )
     monkeypatch.delenv(
         "OPENAI_CHAT_MODEL",
@@ -80,7 +98,7 @@ def test_generate_chat_answer_uses_bounded_request(
 
     instructions = str(kwargs["instructions"])
 
-    assert "<portfolio_reference>" in instructions
+    assert "<portfolio_knowledge>" in instructions
     assert "RepoPilot AI" in instructions
     assert "API keys" in instructions
 
@@ -92,6 +110,14 @@ def test_generate_chat_answer_rejects_empty_output(
         chat,
         "_get_openai_client",
         lambda: FakeClient("   "),
+    )
+    monkeypatch.setattr(
+        chat,
+        "build_chat_knowledge_context",
+        lambda payload: (
+            '{"profile_facts":{},'
+            '"retrieved_chunks":[]}'
+        ),
     )
 
     with pytest.raises(HTTPException) as exc_info:
