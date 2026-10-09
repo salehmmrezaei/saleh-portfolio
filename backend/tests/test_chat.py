@@ -1,7 +1,10 @@
+import os
 from types import SimpleNamespace
 
 import pytest
 from fastapi import HTTPException
+
+os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 
 from app.schemas import ChatRequest
 from app.services import chat
