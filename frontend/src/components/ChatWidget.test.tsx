@@ -99,6 +99,49 @@ describe('ChatWidget', () => {
     ).toBeInTheDocument();
   });
 
+
+  it('sends with Enter and keeps Shift+Enter for a new line', async () => {
+    vi.mocked(sendChatMessage).mockResolvedValue({
+      answer: 'Saleh works across AI and backend engineering.',
+    });
+
+    render(<ChatWidget />);
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Open portfolio assistant',
+      }),
+    );
+
+    const textbox = screen.getByLabelText('Ask about Saleh');
+
+    fireEvent.change(textbox, {
+      target: {
+        value: 'What skills does Saleh have?',
+      },
+    });
+
+    fireEvent.keyDown(textbox, {
+      key: 'Enter',
+      code: 'Enter',
+      shiftKey: true,
+    });
+
+    expect(sendChatMessage).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(textbox, {
+      key: 'Enter',
+      code: 'Enter',
+    });
+
+    await waitFor(() => {
+      expect(sendChatMessage).toHaveBeenCalledWith({
+        message: 'What skills does Saleh have?',
+        history: [],
+      });
+    });
+  });
+
   it('shows a friendly rate-limit error', async () => {
     vi.mocked(sendChatMessage).mockRejectedValueOnce(
       new ApiError(
