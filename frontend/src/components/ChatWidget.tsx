@@ -8,7 +8,7 @@ import {
   sendChatMessage,
   type ChatTurn,
 } from '../api/client';
-import { ChatBubbleIcon } from './Icons';
+import chatbotIcon from '../assets/chatbot.svg';
 
 const MAX_HISTORY_TURNS = 6;
 
@@ -166,6 +166,16 @@ export function ChatWidget() {
               onChange={(event) =>
                 setMessage(event.target.value)
               }
+              onKeyDown={(event) => {
+                if (
+                  event.key === 'Enter'
+                  && !event.shiftKey
+                  && !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
               placeholder="Ask about experience, projects, skills..."
               maxLength={800}
               rows={2}
@@ -199,7 +209,11 @@ export function ChatWidget() {
         }
         aria-expanded={isOpen}
       >
-        <ChatBubbleIcon />
+        <img
+          src={chatbotIcon}
+          alt=""
+          aria-hidden="true"
+        />
       </button>
     </div>
   );
