@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 import { ContactIcon, HomeButton } from './Icons';
 import profileImage from '../assets/profile.png';
 
@@ -12,6 +12,32 @@ export function Hero({ onBackHome }: HeroProps) {
   const [lineIndex, setLineIndex] = useState(0);
   const [visibleText, setVisibleText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const scrollToContact = (
+    event: MouseEvent<HTMLAnchorElement>,
+  ) => {
+    event.preventDefault();
+
+    const pageShell =
+      document.querySelector<HTMLElement>('.page-shell');
+    const contactSection =
+      document.querySelector<HTMLElement>('#contact');
+
+    if (!pageShell || !contactSection) {
+      return;
+    }
+
+    pageShell.scrollTo({
+      top: contactSection.offsetTop,
+      behavior: 'smooth',
+    });
+
+    window.history.replaceState(
+      null,
+      '',
+      '#contact',
+    );
+  };
 
   useEffect(() => {
     const line = rotatingLines[lineIndex];
@@ -28,7 +54,13 @@ export function Hero({ onBackHome }: HeroProps) {
   return (
     <section className="hero snap-section" id="home">
       <nav className="topbar" aria-label="Primary navigation">
-        <a className="contact-corner" href="#contact"><ContactIcon /> Get in touch</a>
+        <a
+          className="contact-corner"
+          href="#contact"
+          onClick={scrollToContact}
+        >
+          <ContactIcon /> Get in touch
+        </a>
       </nav>
       <div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" /><div className="hero-orbit orbit-three" />
       <div className="hero-content">
@@ -36,7 +68,7 @@ export function Hero({ onBackHome }: HeroProps) {
         <p className="eyebrow">AI / ML ENGINEER</p>
         <h1>{visibleText}<span className="cursor" aria-hidden="true" /></h1>
         <nav className="hero-navigation" aria-label="Portfolio sections">
-          <a href="#about">About me</a><a href="#experience">My experiences</a><a href="#projects">My projects</a><a href="#skills">Skills</a><a href="#contact">Contact me</a>
+          <a href="#about">About me</a><a href="#experience">My experiences</a><a href="#projects">My projects</a><a href="#skills">Skills</a><a href="#contact" onClick={scrollToContact}>Contact me</a>
         </nav>
       </div>
       <HomeButton onClick={onBackHome} />
