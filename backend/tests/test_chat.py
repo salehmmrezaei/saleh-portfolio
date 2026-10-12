@@ -126,3 +126,17 @@ def test_generate_chat_answer_rejects_empty_output(
         )
 
     assert exc_info.value.status_code == 502
+
+
+def test_system_instructions_strictly_reject_unrelated_questions() -> None:
+    instructions = chat.SYSTEM_INSTRUCTIONS
+
+    assert (
+        "do not answer the unrelated question at all"
+        in instructions
+    )
+    assert "celebrities, sports, politics" in instructions
+    assert (
+        "I can help with Saleh's portfolio"
+        in instructions
+    )
