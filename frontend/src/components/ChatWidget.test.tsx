@@ -99,6 +99,48 @@ describe('ChatWidget', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders bold text and safe clickable links in assistant answers', async () => {
+    vi.mocked(sendChatMessage).mockResolvedValueOnce({
+      answer:
+        'Contact **Saleh** via [his contact page](https://salehmmrezaei.com/#contact).',
+    });
+
+    render(<ChatWidget />);
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Open portfolio assistant',
+      }),
+    );
+
+    fireEvent.change(
+      screen.getByLabelText('Ask about Saleh'),
+      {
+        target: {
+          value: 'How can I contact Saleh?',
+        },
+      },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(await screen.findByText('Saleh')).toHaveProperty(
+      'tagName',
+      'STRONG',
+    );
+    expect(
+      await screen.findByRole('link', {
+        name: 'his contact page',
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://salehmmrezaei.com/#contact',
+    );
+    expect(
+      screen.queryByText('**Saleh**'),
+    ).not.toBeInTheDocument();
+  });
+
 
   it('sends with Enter and keeps Shift+Enter for a new line', async () => {
     vi.mocked(sendChatMessage).mockResolvedValue({

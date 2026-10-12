@@ -149,6 +149,20 @@
   color: #35433f;
 }
 
+.chat-message.assistant strong {
+  font-weight: 700;
+}
+
+.chat-message.assistant a {
+  color: #356d75;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chat-message.assistant a:hover {
+  color: #e87352;
+}
+
 .chat-message.user {
   justify-items: end;
 }

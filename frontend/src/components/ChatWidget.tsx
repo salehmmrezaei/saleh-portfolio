@@ -1,6 +1,7 @@
 import {
   useState,
   type FormEvent,
+  type ReactNode,
 } from 'react';
 
 import {
@@ -11,6 +12,54 @@ import {
 import chatbotIcon from '../assets/chatbot.svg';
 
 const MAX_HISTORY_TURNS = 6;
+const MARKDOWN_PATTERN = /(\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)\s]+)\))/g;
+
+function isSafeLink(value: string): boolean {
+  return /^(https?:\/\/|mailto:)/i.test(value);
+}
+
+function renderAnswer(content: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  MARKDOWN_PATTERN.lastIndex = 0;
+
+  while ((match = MARKDOWN_PATTERN.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(content.slice(lastIndex, match.index));
+    }
+
+    if (match[2]) {
+      parts.push(
+        <strong key={`bold-${match.index}`}>
+          {match[2]}
+        </strong>,
+      );
+    } else if (match[3] && match[4] && isSafeLink(match[4])) {
+      parts.push(
+        <a
+          key={`link-${match.index}`}
+          href={match[4]}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {match[3]}
+        </a>,
+      );
+    } else {
+      parts.push(match[0]);
+    }
+
+    lastIndex = MARKDOWN_PATTERN.lastIndex;
+  }
+
+  if (lastIndex < content.length) {
+    parts.push(content.slice(lastIndex));
+  }
+
+  return parts;
+}
 
 function getErrorMessage(error: unknown): string {
   if (!(error instanceof ApiError)) {
@@ -132,7 +181,11 @@ export function ChatWidget() {
                 <span>
                   {turn.role === 'user' ? 'You' : 'Assistant'}
                 </span>
-                <p>{turn.content}</p>
+                <p>
+                  {turn.role === 'assistant'
+                    ? renderAnswer(turn.content)
+                    : turn.content}
+                </p>
               </div>
             ))}
 
