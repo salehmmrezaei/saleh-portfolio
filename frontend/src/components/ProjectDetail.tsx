@@ -1,5 +1,6 @@
 import { projectDetails, slugify, type ChallengeCaseStudy, type PipelineStage, type ProjectDetails } from '../data/projects';
 import type { Project } from '../types';
+import { ExternalLinkIcon } from './Icons';
 
 interface ProjectDetailProps {
   project: Project;
@@ -46,15 +47,28 @@ export function ProjectDetail({ project, projectIndex, projects, onNavigate, onB
           <div><span>Type</span><strong>{projectType}</strong></div>
           <div><span>Year</span><strong>{details.year}</strong></div>
         </div>
-        <a
-          className="project-github"
-          href={project.url}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span className="project-github-label">View source on GitHub</span>
-          <span className="project-github-icon" aria-hidden="true" />
-        </a>
+        <div className="project-actions">
+          <a
+            className="project-github"
+            href={project.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="project-github-label">View source on GitHub</span>
+            <span className="project-github-icon" aria-hidden="true" />
+          </a>
+          {details.liveDemoUrl && (
+            <a
+              className="project-github"
+              href={details.liveDemoUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="project-github-label">Visit Live Demo</span>
+              <ExternalLinkIcon className="external-icon" />
+            </a>
+          )}
+        </div>
 
       </header>
 
