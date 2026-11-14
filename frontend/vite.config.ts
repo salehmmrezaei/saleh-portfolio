@@ -10,6 +10,7 @@ const SITE_URL = 'https://salehmmrezaei.com';
 const IMAGE_URL = `${SITE_URL}/saleh-rezaei.png`;
 
 const projectNameBySlug: Record<string, string> = {
+  'mediflow-ai': 'MediFlow AI',
   'repopilot-ai': 'RepoPilot AI',
   'voice-notes-ai': 'Voice Notes AI',
   'disagreement-aware-sexism-detection': 'Disagreement-Aware Sexism Detection',
