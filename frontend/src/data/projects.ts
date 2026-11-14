@@ -8,6 +8,7 @@ export interface ProjectDetails {
   role?: string;
   coreStack?: string[];
   type?: string;
+  liveDemoUrl?: string;
   stack: Record<string, StackGroup>;
   challenges: string[] | ChallengeCaseStudy[];
   outcomes: string[];
@@ -41,6 +42,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
     role: 'AI / Full-Stack Engineer',
     coreStack: ['AWS Lambda', 'Step Functions', 'FastAPI', 'DynamoDB', 'Cognito', 'React', 'TypeScript', 'OpenAI'],
     type: 'Personal Engineering Prototype',
+    liveDemoUrl: 'https://mediflow.salehmmrezaei.com',
     overview: 'A full-stack healthcare workflow prototype featuring evidence-grounded clinical questions, asynchronous discharge-letter generation, and explicit doctor review, using fictional patient data.',
     problem: 'Clinical questions and discharge documentation draw on information spread across patient notes. An AI workflow needs to keep each doctor within their assigned records, show the notes behind generated text, and make missing information visible.\nMediFlow AI explores this workflow with fictional patient data: answer questions from authorized notes, generate a structured discharge draft in the background, and let a doctor edit, approve, or reject it through an explicit review step.',
     pipeline: [

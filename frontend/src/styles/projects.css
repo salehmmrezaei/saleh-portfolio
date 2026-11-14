@@ -256,6 +256,13 @@
   text-transform: none;
 }
 
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
 .project-github {
   display: inline-flex;
   align-items: center;
