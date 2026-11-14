@@ -34,6 +34,81 @@ export function slugify(value: string) {
 }
 
 export const projectDetails: Record<string, ProjectDetails> = {
+  'mediflow-ai': {
+    slug: 'mediflow-ai',
+    category: 'Serverless Healthcare AI Workflow Platform',
+    year: '2026',
+    role: 'AI / Full-Stack Engineer',
+    coreStack: ['AWS Lambda', 'Step Functions', 'FastAPI', 'DynamoDB', 'Cognito', 'React', 'TypeScript', 'OpenAI'],
+    type: 'Personal Engineering Prototype',
+    overview: 'A full-stack healthcare workflow prototype featuring evidence-grounded clinical questions, asynchronous discharge-letter generation, and explicit doctor review, using fictional patient data.',
+    problem: 'Clinical questions and discharge documentation draw on information spread across patient notes. An AI workflow needs to keep each doctor within their assigned records, show the notes behind generated text, and make missing information visible.\nMediFlow AI explores this workflow with fictional patient data: answer questions from authorized notes, generate a structured discharge draft in the background, and let a doctor edit, approve, or reject it through an explicit review step.',
+    pipeline: [
+      {
+        title: 'Authenticated doctor workspace',
+        description: 'Sign in through Cognito using authorization code flow with PKCE. API Gateway validates the access token, and FastAPI checks doctor ownership before returning patient records or clinical notes from DynamoDB.',
+      },
+      {
+        title: 'Evidence-grounded clinical questions',
+        description: 'Pass a bounded set of authorized notes to OpenAI for structured answers. Validate supporting note IDs against the supplied evidence and return an insufficient-evidence response when the notes do not establish an answer.',
+      },
+      {
+        title: 'Asynchronous discharge drafting',
+        description: 'Create an idempotent job in DynamoDB and start a Step Functions workflow. Lambda workers generate seven structured sections with source note IDs and explicit missing-information markers, then persist an unsigned draft for review.',
+      },
+      {
+        title: 'Explicit doctor review',
+        description: 'Poll job progress in React, edit documented text, and save with version checks. Approval requires confirmation and acknowledgement of missing sections; rejection requires a reason. Reviewed drafts become read-only and remain unsigned.',
+      },
+    ],
+    stack: {
+      'API & Identity': {
+        technologies: ['Python 3.12', 'FastAPI', 'Mangum', 'API Gateway', 'Cognito'],
+        role: 'Typed patient and review endpoints, Lambda request handling, access-token validation, and doctor-scoped authorization.',
+      },
+      'Serverless Workflows & Data': {
+        technologies: ['AWS Lambda', 'Step Functions', 'DynamoDB', 'EventBridge Scheduler', 'CloudWatch', 'AWS SAM'],
+        role: 'Background drafting, persisted job states, conditional updates, scheduled stale-job recovery, monitoring definitions, and infrastructure as code.',
+      },
+      'AI & Evidence': {
+        technologies: ['OpenAI Responses API', 'Structured Outputs', 'Pydantic', 'AWS Secrets Manager'],
+        role: 'Schema-constrained answers and drafts from supplied clinical notes, citation membership checks, missing-section validation, and server-side API credentials.',
+      },
+      'Frontend & Quality': {
+        technologies: ['React', 'TypeScript', 'Vite', 'AWS Amplify', 'pytest', 'Vitest', 'React Testing Library'],
+        role: 'Doctor sign-in, patient selection, clinical questions, job polling, draft editing, review controls, and automated tests with mocked services.',
+      },
+    },
+    challenges: [
+      {
+        title: 'Evidence and missing information',
+        problem: 'Generated text can invent details or cite notes that were never supplied, while incomplete records still need a useful review interface.',
+        approach: 'Bound the input notes, require structured output, validate cited note IDs, and enforce explicit placeholders for undocumented sections. Keep doctor review visible because valid references alone do not establish clinical correctness.',
+      },
+      {
+        title: 'Retries across an asynchronous workflow',
+        problem: 'A generation request can be repeated or lose its response after the job is stored, and background processing can fail before publishing a draft.',
+        approach: 'Reuse a UUIDv4 idempotency key and deterministic workflow execution name, guard job transitions with DynamoDB conditions, and reconcile stale jobs against Step Functions execution status.',
+      },
+      {
+        title: 'Concurrent edits and deliberate review',
+        problem: 'A stale browser can overwrite a newer draft or submit a review decision against text the doctor has not seen.',
+        approach: 'Require the latest updated_at value for saves and reviews, reject conflicting updates, preserve evidence metadata, and make approval or rejection an explicit action on the saved draft.',
+      },
+      {
+        title: 'Patient context isolation',
+        problem: 'A delayed answer or draft response can arrive after the doctor switches to another patient or signs out.',
+        approach: 'Check ownership on the server, clear patient-specific React state on context changes, cancel pending browser requests, and ignore late responses from an earlier patient context.',
+      },
+    ],
+    outcomes: [
+      'A complete prototype connecting doctor sign-in, fictional patient records, clinical questions, discharge drafting, and review',
+      'Structured answers and seven-section drafts with supporting note IDs and visible missing information',
+      'Persisted asynchronous jobs with idempotent submission, conditional state transitions, and scheduled recovery',
+      'Version-checked draft editing and explicit approval or rejection that keeps reviewed documents unsigned',
+      'Automated backend and frontend tests using mocked services; live browser verification of generation and review remains outstanding',
+    ],
+  },
   'repopilot-ai': {
     slug: 'repopilot-ai',
     category: 'AI Developer tooling',

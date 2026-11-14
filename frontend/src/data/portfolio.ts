@@ -2,6 +2,7 @@ import type { Education, Experience, Project, SkillCategory } from '../types';
 import { projectDetails } from './projects';
 
 const PROJECT_NAMES: Record<string, string> = {
+  'mediflow-ai': 'MediFlow AI',
   'repopilot-ai': 'RepoPilot AI',
   'voice-notes-ai': 'Voice Notes AI',
   'disagreement-aware-sexism-detection': 'Disagreement-Aware Sexism Detection',

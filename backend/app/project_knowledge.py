@@ -59,7 +59,7 @@ PROJECT_KNOWLEDGE = {
         "outcomes": [
             "Source release includes implemented code-understanding, durable chat and bounded engineering-workflow paths.",
             "Recorded CI validates backend/frontend suites, schema migration checks and container builds; this establishes regression checks, not production usage or retrieval quality.",
-            "Strongest portfolio evidence for backend architecture, RAG plumbing, asynchronous job safety and API design among these six repositories."
+            "Strongest portfolio evidence for backend architecture, RAG plumbing, asynchronous job safety and API design in this portfolio."
         ],
         "verified_metrics": [
             "GitHub Actions run #65, 6 October 2026, commit 6fcaab0: completed successfully (GitHub run metadata).",
@@ -75,6 +75,77 @@ PROJECT_KNOWLEDGE = {
             "A source-checked patch proposal is not a merged PR; autonomous GitHub writes are intentionally out of scope."
         ],
         "retrieval_terms": ["repopilot", "repopilot ai", "repo pilot", "codebase", "repository intelligence", "github import", "commit pinned", "source snapshot", "static indexing", "python ast", "typescript tsx", "tree sitter", "symbol search", "lexical search", "semantic retrieval", "hybrid retrieval", "reciprocal rank fusion", "rrf", "pgvector", "postgresql", "exact cosine", "search generations", "chunking", "source citations", "citation validation", "grounded answers", "rag", "conversation history", "sse", "celery", "redis", "durable jobs", "leases", "job dispatcher", "openai embeddings", "usage receipts", "agent tools", "diff proposals", "pr review", "sandbox", "test execution", "repair loop", "backend engineering"]
+    },
+    "mediflow-ai": {
+        "title": "MediFlow AI",
+        "aliases": ["MediFlow", "MediFlow AI", "mediflow-ai", "serverless healthcare AI workflow platform"],
+        "keywords": ["mediflow", "healthcare workflow", "clinical assistant", "clinical notes", "discharge letters", "doctor review", "fictional patient data", "serverless", "AWS Lambda", "Step Functions", "FastAPI", "DynamoDB", "Cognito", "React", "TypeScript", "OpenAI"],
+        "role": "Project published under Saleh's GitHub account; individual authorship of each module is not separately established.",
+        "year": "2026 (November 2026 repository and source review)",
+        "type": "Full-stack serverless healthcare AI workflow prototype using fictional patient data",
+        "overview": "MediFlow AI provides a doctor workspace for assigned fictional patients, evidence-grounded questions about their clinical notes, and asynchronous discharge-letter generation followed by explicit doctor editing and review. Answers and draft sections carry supporting note IDs, while missing information is identified instead of silently completed. The application demonstrates a serverless workflow and human review boundary; it does not establish clinical accuracy, production healthcare use or compliance certification.",
+        "problem": "Clinical information can be distributed across notes, and AI-generated summaries need visible source references, explicit missing-information handling and a doctor's review before use. A slow generation request also needs durable progress, safe retries and protection against concurrent edits or review decisions.",
+        "architecture": "A React/TypeScript/Vite doctor workspace uses AWS Amplify with Cognito hosted authorization-code login and PKCE. The browser sends access tokens to an API Gateway JWT-authorized FastAPI application running on AWS Lambda through Mangum. DynamoDB stores patients, clinical notes and discharge jobs/drafts. The backend checks the authenticated doctor's patient assignment before supplying notes to OpenAI's structured Responses API. Discharge generation runs through a Standard Step Functions state machine and Lambda workers. Conditional DynamoDB writes guard job transitions, draft publication and doctor review. A scheduled recovery Lambda checks stale jobs against Step Functions execution state. AWS SAM defines the infrastructure, and Secrets Manager supplies the server-side model credential.",
+        "pipeline": [
+            {"title": "Authenticate and select a patient", "description": "Sign in through Cognito and load the fictional patient records assigned to the doctor's subject identifier. Check patient ownership on the backend before reading their clinical evidence."},
+            {"title": "Answer from bounded clinical evidence", "description": "Read up to 20 authorized notes, truncate each to 1,200 characters and send a question of up to 500 characters to OpenAI with a strict Pydantic response schema. Validate cited note IDs and return an insufficient-evidence result when the notes do not establish an answer. This is direct note-based evidence, without embeddings, vector search or a semantic retrieval index."},
+            {"title": "Create and dispatch a durable generation job", "description": "Validate a UUIDv4 Idempotency-Key, derive a doctor-scoped deterministic job ID and conditionally persist a queued DynamoDB record. Start a Step Functions execution named after the job; retries of an uncertain submission retain the same key and can recover a queued dispatch."},
+            {"title": "Generate an unsigned draft", "description": "Workers conditionally move queued jobs into processing, recheck patient authorization and generate seven structured sections from the supplied notes. Validate evidence-reference structure and missing-information placeholders before conditionally publishing an unsigned draft as pending review."},
+            {"title": "Edit and explicitly review", "description": "The browser polls job status approximately every three seconds and loads the draft when ready. Doctors can save text edits and explicitly approve or reject the saved version. Expected updated_at values prevent stale overwrites; approval requires acknowledgement of missing sections, rejection requires a reason and approved documents remain unsigned."},
+            {"title": "Reconcile abandoned work", "description": "A scheduled recovery worker checks stale queued/processing jobs against their Step Functions execution. It conditionally marks abandoned work failed while leaving running executions, review drafts and terminal records untouched; recovery does not automatically regenerate a letter."}
+        ],
+        "stack": {
+            "Frontend": {"technologies": ["React", "TypeScript", "Vite", "AWS Amplify", "AbortController"], "role": "Doctor sign-in, patient selection, clinical questions, job polling, draft editing, review dialogs and patient-specific request isolation."},
+            "API and identity": {"technologies": ["Python", "FastAPI", "Pydantic", "Mangum", "AWS Lambda", "API Gateway", "Cognito"], "role": "Typed API contracts, JWT-authorized requests, doctor ownership checks and safe service-error responses."},
+            "Evidence and generation": {"technologies": ["OpenAI Responses API", "Pydantic structured outputs", "AWS Secrets Manager"], "role": "Bounded note-based answers and discharge drafts with server-side credentials, source-ID validation and missing-information handling."},
+            "Persistence and orchestration": {"technologies": ["DynamoDB", "AWS Step Functions Standard", "AWS Lambda", "boto3"], "role": "Durable jobs/drafts, idempotent creation, conditional state changes, optimistic concurrency and stale-job reconciliation."},
+            "Infrastructure and checks": {"technologies": ["AWS SAM", "CloudFormation", "CloudWatch", "EventBridge scheduled events", "pytest", "Vitest", "React Testing Library", "jsdom"], "role": "Serverless resource definitions, scheduled recovery and alarms, backend tests and mocked frontend workflow tests."}
+        },
+        "engineering_details": [
+            "Clinical evidence is loaded by patient ID only after doctor ownership is verified. The note query is bounded to 20 records, and model inputs truncate each note to 1,200 characters; this does not search or summarize an unlimited patient history.",
+            "OpenAI Responses calls parse into strict Pydantic schemas, use explicit timeouts and output-token budgets, disable SDK retries and set store=False. Model instructions treat clinical notes as data and prohibit invented findings and independent treatment recommendations.",
+            "Clinical Q&A verifies that supporting IDs belong to the supplied notes and requires references for substantive answers. Reference membership is a structural check, not proof that the note semantically supports every generated claim.",
+            "The seven draft sections are admission reason, hospital course, investigations, discharge diagnosis, discharge medications, discharge date and follow-up. Each section has text, a documented flag and supporting note IDs. Missing sections retain the exact supplied missing-information placeholder, and missing_sections is derived server-side.",
+            "A validated client UUIDv4 key and doctor identity determine a UUIDv5 job ID. Conditional insertion prevents duplicate job records, while reusing the same doctor-scoped key for another patient returns a conflict. Step Functions receives the job ID rather than clinical note text.",
+            "The Standard state machine marks processing, invokes draft generation and routes failures through a conditional failure handler. Worker retries and repeat invocations cannot overwrite pending-review or terminal records; this does not guarantee exactly-once external model execution.",
+            "Doctor edits and decisions condition on the stored updated_at value and pending-review status. The backend validates edited section sizes and authorized evidence IDs. The current browser editor changes documented-section text while preserving documented flags and evidence references; missing sections are not filled through that text-only editor.",
+            "Approval records REVIEW_APPROVED_UNSIGNED, while rejection records a reason and a rejected draft. Neither operation signs, delivers or automatically discharges a patient.",
+            "The reconciler runs every 15 minutes and considers queued/processing records stale after 30 minutes. It checks execution state before a conditional status-and-timestamp update, protecting active workflows and concurrently changed records.",
+            "Keyed patient components reset state before effects, pending requests are aborted, responses are checked against the selected patient/job and late responses are ignored. Questions, drafts and active job references are held in React memory; changing patients, signing out or reloading loses active tracking while a backend job may continue."
+        ],
+        "challenges": [
+            {"title": "Evidence and missing information", "problem": "A plausible answer or letter can invent clinical facts or conceal gaps in the supplied notes.", "approach": "Bound and authorize source notes, require structured output and valid note IDs, explicitly mark missing sections and abstain when evidence is absent. Leave factual assessment to doctor review rather than treating citation-ID validation as a correctness guarantee."},
+            {"title": "Uncertain asynchronous submissions", "problem": "A client can lose the response after a job is stored, or workflow dispatch can fail after persistence.", "approach": "Keep a stable client idempotency key, deterministic doctor-scoped job/execution identity and conditional creation. Retrying an existing queued job can retry dispatch without creating another job; scheduled reconciliation detects abandoned processing."},
+            {"title": "Concurrent editing and explicit review", "problem": "Two views can save stale text or review a different draft version, and generation must not imply doctor approval.", "approach": "Use expected_updated_at optimistic concurrency and pending-review conditions for all mutations. Require explicit approval/rejection, missing-section acknowledgement and rejection reasons; keep reviewed drafts read-only in the UI and approved output unsigned."},
+            {"title": "Patient context isolation", "problem": "A late request could display one patient's answer or draft after the doctor selects someone else.", "approach": "Replace component state using patient keys, abort requests on context changes and check patient/job identity before displaying responses. Backend ownership checks remain authoritative."}
+        ],
+        "security_and_reliability": [
+            "API Gateway validates Cognito JWTs, and the backend requires an access-token claim and subject identifier from its authorizer context. Patient and job operations enforce the authenticated doctor's ownership.",
+            "OpenAI credentials are retrieved and cached server-side from Secrets Manager. Browser configuration contains public Cognito/API identifiers rather than an OpenAI key.",
+            "Conditional DynamoDB writes protect creation, workflow effects, draft editing and review; expected_updated_at conflicts are surfaced to the browser for reload instead of silently overwriting another version.",
+            "CloudWatch alarms cover workflow failures, timeouts and recovery errors. Recovery changes only matching stale queued/processing records after checking their workflow status.",
+            "The supplied seed script uses explicitly fictional notes. The source does not establish suitability for real patient data, legal signing or any healthcare compliance certification."
+        ],
+        "testing_and_quality": [
+            "Backend pytest files cover patient authorization, clinical answer validation, discharge schemas, job creation/dispatch, processing and draft workers, recovery and review endpoints.",
+            "Vitest/React Testing Library tests mock authentication and HTTP requests to cover clinical questions, retry keys, job polling, edits, conflicts, review confirmation and patient isolation.",
+            "A frontend integration test uses the real components and API clients with a stateful mocked HTTP server to save and retrieve edits, approve a draft, reject another job and switch patients.",
+            "The frontend README records local tests, TypeScript checks and build checks, while its signed-in browser checklist for live generation, editing and review remains incomplete. Mocked tests do not establish AWS persistence, live model quality or complete deployed integration."
+        ],
+        "outcomes": [
+            "Implemented source connects authenticated fictional patient records, evidence-linked clinical Q&A, durable asynchronous discharge drafting and explicit doctor review in one full-stack prototype.",
+            "The project demonstrates serverless orchestration, idempotent API design, conditional persistence, optimistic concurrency and frontend request isolation without claiming measured clinical or business outcomes."
+        ],
+        "limitations": [
+            "This is a prototype using fictional patient data; production healthcare usage, clinical safety, factual accuracy and compliance certification are not established.",
+            "Evidence is a bounded direct-note query, not vector retrieval or a complete patient-history search. Citation-ID checks validate source membership, not semantic entailment.",
+            "Doctor approval is an unsigned review decision rather than an electronic/legal signature, automatic discharge or document delivery.",
+            "The frontend has no patient discharge-job history or rediscovery endpoint; changing patients, signing out or reloading clears active job tracking even though stored background work may continue.",
+            "Recovery marks abandoned work failed rather than automatically restarting it, and external model invocation is not guaranteed exactly once.",
+            "Cognito callbacks and browser CORS are configured for localhost. The repository documents an existing AWS development backend, but its complete signed-in generation/edit/review browser acceptance remains unverified.",
+            "No verified model-quality scores, clinical outcomes, production adoption, throughput or availability metrics were found in the audited source."
+        ],
+        "retrieval_terms": ["mediflow", "mediflow ai", "medi flow", "mediflow-ai", "healthcare", "healthcare ai", "clinical assistant", "clinical questions", "clinical notes", "fictional patients", "synthetic patient data", "discharge letter", "discharge draft", "doctor workspace", "doctor review", "human review", "human in the loop", "unsigned draft", "missing sections", "supporting note ids", "evidence grounded", "insufficient evidence", "structured outputs", "openai responses", "serverless", "aws lambda", "step functions", "standard workflow", "api gateway", "fastapi", "mangum", "dynamodb", "conditional writes", "cognito", "pkce", "amplify", "secrets manager", "sam", "cloudformation", "cloudwatch", "recovery", "reconciliation", "idempotency key", "uuidv4", "uuidv5", "optimistic concurrency", "expected updated at", "job polling", "patient isolation", "react", "typescript"]
     },
     "voice-notes-ai": {
         "title": "Voice Notes AI",
