@@ -42,7 +42,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
     role: 'AI / Full-Stack Engineer',
     coreStack: ['AWS Lambda', 'Step Functions', 'FastAPI', 'DynamoDB', 'Cognito', 'React', 'TypeScript', 'OpenAI'],
     type: 'Personal Engineering Prototype',
-    liveDemoUrl: 'https://mediflow.salehmmrezaei.com',
+    liveDemoUrl: 'https://mediflow.salehmmrezaei.com/demo',
     overview: 'A full-stack healthcare workflow prototype featuring evidence-grounded clinical questions, asynchronous discharge-letter generation, and explicit doctor review, using fictional patient data.',
     problem: 'Clinical questions and discharge documentation draw on information spread across patient notes. An AI workflow needs to keep each doctor within their assigned records, show the notes behind generated text, and make missing information visible.\nMediFlow AI explores this workflow with fictional patient data: answer questions from authorized notes, generate a structured discharge draft in the background, and let a doctor edit, approve, or reject it through an explicit review step.',
     pipeline: [
@@ -108,7 +108,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
       'Structured answers and seven-section drafts with supporting note IDs and visible missing information',
       'Persisted asynchronous jobs with idempotent submission, conditional state transitions, and scheduled recovery',
       'Version-checked draft editing and explicit approval or rejection that keeps reviewed documents unsigned',
-      'Automated backend and frontend tests using mocked services; live browser verification of generation and review remains outstanding',
+      'Automated backend and frontend tests using mocked services; the public demo was tested locally, and the authenticated application was manually tested for generation and review',
     ],
   },
   'repopilot-ai': {

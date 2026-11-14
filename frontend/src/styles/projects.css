@@ -263,6 +263,20 @@
   gap: 1rem 1.5rem;
 }
 
+.project-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 1rem;
+}
+
+.project-demo-note {
+  max-width: 42rem;
+  margin: 0;
+  color: var(--text-muted);
+  font: 400 .72rem/1.5 'DM Mono', monospace;
+}
+
 .project-github {
   display: inline-flex;
   align-items: center;
