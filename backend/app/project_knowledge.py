@@ -76,6 +76,72 @@ PROJECT_KNOWLEDGE = {
         ],
         "retrieval_terms": ["repopilot", "repopilot ai", "repo pilot", "codebase", "repository intelligence", "github import", "commit pinned", "source snapshot", "static indexing", "python ast", "typescript tsx", "tree sitter", "symbol search", "lexical search", "semantic retrieval", "hybrid retrieval", "reciprocal rank fusion", "rrf", "pgvector", "postgresql", "exact cosine", "search generations", "chunking", "source citations", "citation validation", "grounded answers", "rag", "conversation history", "sse", "celery", "redis", "durable jobs", "leases", "job dispatcher", "openai embeddings", "usage receipts", "agent tools", "diff proposals", "pr review", "sandbox", "test execution", "repair loop", "backend engineering"]
     },
+    "ai-rental-agent": {
+        "title": "AI Rental Agent",
+        "aliases": ["AI Rental Agent", "ai-rental-agent", "Casa", "Casa AI Rental Agent", "rental platform"],
+        "keywords": ["Casa", "rental agent", "rental platform", "property management", "tenant", "landlord", "agency", "OpenAI Agents SDK", "Responses API", "human confirmation", "FastAPI", "PostgreSQL", "React", "TypeScript", "booking conflicts", "availability", "contract", "visit scheduling"],
+        "role": "Personal engineering project implemented by Saleh, as stated by him; AI / Full-Stack Engineer.",
+        "year": "2026 (November 2026 repository source review)",
+        "type": "Full-stack rental platform with role-specific AI assistants and synthetic Italian property data",
+        "overview": "Casa brings Italian room/apartment search, landlord inventory management and agency rental operations into a React/FastAPI application. Tenants find and save homes, request visits, apply and message the agency. Landlords manage their own properties, units and draft listings; agency administrators moderate listings, decide applications, manage contracts and schedule visits. Separate tenant, landlord and agency AI tool sets query live backend records and prepare reviewable changes. Only an explicit confirmation click can execute a prepared action. The demo uses synthetic data rather than real rental transactions.",
+        "problem": "Rental search and management span published listings, room/apartment availability, agency approvals, applications, contracts and visits. An AI assistant must respect each user's role, use current data and let people inspect exact changes, while concurrent booking attempts must not reserve overlapping rooms or apartments.",
+        "architecture": "React, TypeScript, Vite, Tailwind CSS and React Router provide public search plus tenant, landlord and agency dashboards. Versioned FastAPI routes validate Pydantic inputs and call authorization-aware services and SQLAlchemy repositories. PostgreSQL is authoritative for inventory, contracts, messages, AI history and pending actions; Alembic defines constraints, triggers and migrations. The OpenAI Agents SDK runs a Responses API model with a role-specific tool set. Tools read current authorized records or buffer validated proposals. A separate confirmation endpoint reauthenticates, locks the stored action and executes existing rental services in a retryable transaction. Docker Compose supplies the local application and verification environments.",
+        "pipeline": [
+            {"title": "Search and inspect current inventory", "description": "Filter published rooms/apartments by city, price, bedrooms and complete rental dates. Derive availability and occupancy from dated contracts, not an editable occupied flag. Show authorized listing cards and preserve validated search filters for pagination without another model request."},
+            {"title": "Manage the rental lifecycle by role", "description": "Landlords create owned properties and units and submit listings; the agency reviews and publishes them. Tenants submit applications and visit requests, while agency services approve contracts and schedule appointments. Internal conversations, saved homes and role-scoped reports complete the workflow."},
+            {"title": "Run an assistant against live backend tools", "description": "Choose tenant, landlord or agency instructions and allowlisted tools from the authenticated role. Read scoped inventory, rental status, conversations and reports. Keep model history on the server; listing/visit references come from authorized database rows rather than generated URLs. This is tool-based access to relational records, not embedding/vector RAG."},
+            {"title": "Prepare exact changes for human review", "description": "Validate requested actions, keep canonical payloads and backend summaries, and save at most three proposals per reply with ten-minute expiry. Cards expose fields, dates, money and messages. The model has no action-confirmation tool, and a chat reply such as yes does not execute changes."},
+            {"title": "Confirm and commit atomically", "description": "Require confirmed=true through the HTTP endpoint, reauthenticate and lock the owned chat/action. Recheck authorization, publication, transitions, availability and quoted rent; inventory proposals also carry reviewed record versions. Commit the business write and action result together. Repeated or concurrent confirmations return the persisted result."}
+        ],
+        "stack": {
+            "Frontend": {"technologies": ["React", "TypeScript", "Vite", "Tailwind CSS", "React Router"], "role": "Public search/detail pages, three role dashboards, listing and visit cards, persistent AI chats and explicit action review. The floating Blu companion opens the same authorized assistant workflows."},
+            "Backend and data": {"technologies": ["Python", "FastAPI", "Pydantic", "PostgreSQL", "SQLAlchemy", "Alembic"], "role": "Typed REST endpoints, ownership and role checks, rental state transitions, database-enforced booking consistency and durable assistant actions."},
+            "AI and authentication": {"technologies": ["OpenAI Agents SDK", "OpenAI Responses API", "Argon2id", "JWT"], "role": "Role-specific bounded tool loops, live record access, proposed actions, backend-only provider credentials and revocable authenticated sessions."},
+            "Development and verification": {"technologies": ["Docker Compose", "pytest", "Vitest", "React Testing Library", "Playwright", "Faker"], "role": "Local stack, disposable PostgreSQL verification databases, scripted-model assistant tests, browser journeys and opt-in synthetic demo seeding."}
+        },
+        "engineering_details": [
+            "Rental intervals are half-open [start, end), so back-to-back contracts may share a boundary. An apartment booking conflicts with every room in that property, but independent rooms may overlap.",
+            "Database triggers serialize contract writes through a parent-property booking revision update before conflict checks. Complete transactions retry serialization/deadlock failures; a prior availability read is not a reservation.",
+            "Landlord tools scope inventory to the authenticated owner and redact tenant details in contracts. Landlords can submit/withdraw eligible listings but cannot approve or publish them; agency users have a distinct tool set.",
+            "Tenant visit proposals create requests, not scheduled appointments. Agency scheduling is a separate authorized and explicitly confirmed operation, with time offsets and conflict checks.",
+            "The assistant releases its read transaction while awaiting OpenAI and reauthenticates before persistence. A chat version rejects competing replies or action resolutions rather than overwriting newer history.",
+            "Default bounds include six model turns, sixteen tool calls, three proposals per reply, 1,800 output tokens per model turn and a sixty-second request timeout. Complete oldest turns are dropped when history exceeds its bounded context budget.",
+            "Provider response storage and SDK tracing are disabled. Tool/run logs omit free-text prompts, messages, action payloads and provider exception text, while local messages and actions persist in PostgreSQL.",
+            "The opt-in demo seeds 300 synthetic properties across Bologna, Milan, Rome and Florence, each with an apartment and two rooms; these are demo records, not customers or live market inventory."
+        ],
+        "challenges": [
+            {"title": "Safe changes from conversational requests", "problem": "Natural-language agreement and model-generated arguments are insufficient authority for rental mutations.", "approach": "Expose only reads/proposals to the agent, persist canonical review cards and require an explicit confirmation endpoint with fresh authorization and business checks."},
+            {"title": "Room and apartment booking races", "problem": "Two requests can observe availability together, while an apartment overlaps several separately advertised rooms.", "approach": "Enforce cross-unit interval rules in PostgreSQL, serialize writes at the parent property, and retry complete conflicting transactions."},
+            {"title": "Stale and duplicated confirmations", "problem": "Prices, inventory or permissions may change after proposal generation, and browsers can retry confirmation concurrently.", "approach": "Store reviewed data and versions, recheck current state under locks and atomically commit the rental write and saved action result for persistent idempotency."},
+            {"title": "Role privacy with useful AI tools", "problem": "The same assistant surface serves public-home search, private landlord inventory and agency operations.", "approach": "Select separate tool sets from the live role, enforce scoped services on every tool and confirmation, and generate links/cards from authorized backend results."}
+        ],
+        "security_and_reliability": [
+            "Argon2id password hashes and validated JWT access tokens are combined with live account/role/token-version checks; logout and credential changes revoke existing tokens.",
+            "Ownership, moderation locks and lifecycle permissions are enforced in backend services independently of model instructions. Chats/actions remain private even between agency administrators.",
+            "Listing descriptions, messages and tool output are treated as untrusted data; the model has no arbitrary SQL, shell or external browsing tool. AI tools do not manage accounts, delete records or upload photos.",
+            "Validated image uploads are bounded, decoded/re-encoded and served through permission-aware endpoints rather than unrestricted static file access.",
+            "Chat rate limits are per process; production replicas require shared gateway limits and deployment-specific operational controls."
+        ],
+        "testing_and_quality": [
+            "Inspected backend tests run the real Agents SDK loop with an offline scripted model and real PostgreSQL, covering role isolation, read/proposal workflows, stale prices/versions, expiry, revocation, rollback and concurrent confirmation.",
+            "Frontend Vitest/Testing Library cases cover assistant cards, explicit confirmation, role-specific navigation, companion interactions and paginated results; Playwright journeys exercise rental flows and desktop/mobile assistant setup.",
+            "Repository reports record local verification and a limited live tenant search/proposal acceptance check. The remote suites and live model were not executed during this portfolio source review; historical reports do not establish general model quality."
+        ],
+        "outcomes": [
+            "Implemented a connected rental workflow spanning public discovery, three role dashboards, inventory moderation, applications/contracts, visits, internal messages and reporting.",
+            "Delivered role-specific tool-based AI assistants with persisted chat, verified record cards and human-confirmed, transactionally idempotent changes.",
+            "Provided synthetic Italian demo data, Docker setup and automated checks for authorization, booking consistency and assistant confirmation behavior."
+        ],
+        "verified_metrics": [],
+        "limitations": [
+            "The inspected implementation and synthetic demo do not establish public production use, real tenancies, business adoption, uptime or measured AI accuracy.",
+            "AI writes require a confirmation click; applications do not reserve homes, and tenant visit requests require separate agency scheduling. Do not describe the system as autonomously booking rentals or visits.",
+            "Messages remain within the tenant-to-agency platform. Direct landlord messaging, external email, payment collection/tracking, password recovery and email verification are not implemented.",
+            "Live AI requires a backend OpenAI API key and available model. Core browsing and rental forms work without AI configuration; the app surfaces an unavailable state instead of canned model answers.",
+            "Tool evidence and authorization checks do not prove every generated explanation factually correct. Retention/backup policy, shared rate limiting and deployment-specific production acceptance remain operator responsibilities."
+        ],
+        "retrieval_terms": ["ai rental agent", "ai-rental-agent", "casa", "casa ai", "rental platform", "rental assistant", "rent homes", "italian rentals", "bologna", "milan", "rome", "florence", "tenant", "landlord", "agency", "property management", "rooms apartments", "listing moderation", "booking conflict", "availability", "occupancy", "half open intervals", "contract", "application approval", "visit scheduling", "internal messaging", "human confirmation", "review cards", "pending actions", "idempotent confirmation", "record versions", "postgresql triggers", "transaction retries", "openai agents sdk", "responses api", "live backend tools", "role specific tools", "blu companion", "synthetic demo", "fastapi", "react", "typescript", "tailwind", "sqlalchemy", "alembic", "docker compose", "pytest", "vitest", "playwright"]
+    },
     "mediflow-ai": {
         "title": "MediFlow AI",
         "aliases": ["MediFlow", "MediFlow AI", "mediflow-ai", "serverless healthcare AI workflow platform"],

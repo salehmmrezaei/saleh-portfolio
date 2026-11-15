@@ -4,6 +4,7 @@ import { projectDetails } from './projects';
 const PROJECT_NAMES: Record<string, string> = {
   'mediflow-ai': 'MediFlow AI',
   'repopilot-ai': 'RepoPilot AI',
+  'ai-rental-agent': 'AI Rental Agent',
   'voice-notes-ai': 'Voice Notes AI',
   'disagreement-aware-sexism-detection': 'Disagreement-Aware Sexism Detection',
   'reinforcement-learning-lab': 'Reinforcement Learning Lab',

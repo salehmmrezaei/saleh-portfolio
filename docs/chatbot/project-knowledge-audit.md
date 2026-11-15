@@ -1,6 +1,6 @@
 # SECTION A — Repository evidence and analysis
 
-**Scope.** Six public repositories under `salehmmrezaei` were located and their repository trees, implementation files, notebooks, committed output artifacts, and relevant documentation were inspected. Claims in Section B use implementation as the primary source; retained evaluation outputs are treated as recorded results, not fresh reproductions or production acceptance. Dates are given only where stated in repository documents or notebook headings.
+**Scope.** The original six public repositories under `salehmmrezaei` were inspected through their repository trees, implementation files, notebooks, committed output artifacts, and relevant documentation. Section 7 adds the November 2026 AI Rental Agent source review. Claims in Section B use implementation as the primary source; retained evaluation outputs are treated as recorded results, not fresh reproductions or production acceptance. Dates are given only where stated in repository documents or notebook headings.
 
 ## 1. RepoPilot AI
 
@@ -74,10 +74,23 @@
 
 **README versus implementation:** Broadly aligned on notebook/model purpose, but its secondary notebook path appears as lowercase `notebooks/project_work.ipynb`; the actual committed filename is `notebooks/Project_work.ipynb`.
 
+## 7. AI Rental Agent (Casa)
+
+**Repository:** [salehmmrezaei/ai-rental-agent](https://github.com/salehmmrezaei/ai-rental-agent), reviewed at commit `51af5dceae2e64de0992720b5fda005d3aea708a` on 15 November 2026. Saleh explicitly identifies this as his implemented project.
+
+**Strongest evidence:** `backend/app/services/{rental_agent,assistant,assistant_tools,agency_assistant,landlord_assistant}.py`, `backend/tests/test_{assistant,agency_assistant,landlord_assistant}.py`, `docs/{architecture,phase-7,agency-assistant,landlord-assistant,development}.md`, and the repository tree. The updated canonical chatbot record is `backend/app/project_knowledge.py`; Section B below retains the original six-project audit snapshot.
+
+**Verified:** Casa combines public Italian room/apartment search, tenant/landlord/agency workspaces and role-specific Agents SDK tool loops over current PostgreSQL records. Agent tools read data or buffer proposals; a separate explicit confirmation endpoint executes writes. Stored actions expire after ten minutes, use backend canonical payloads, and commit their result with the business mutation under row locks. Fresh authorization, record-version, quoted-rent and availability checks protect the confirmation boundary. Concurrent/repeated confirmations return persisted results. Landlords are limited to their own inventory and redacted contracts; agency review/publication and scheduling remain agency operations. Contract availability uses half-open dates with room/apartment conflict rules; the architecture documents parent-property write serialization and transaction retries. Synthetic demo data contains 300 properties across four Italian cities.
+
+**Test evidence:** Source tests exercise the actual SDK with a scripted offline model and real PostgreSQL, including private history, role boundaries, stale records/prices, expiry, rollback, revocation and concurrent confirmation. Frontend/browser test sources are present. Documentation records historical local verification and a limited live tenant search/proposal check. These remote tests and live calls were not rerun during this audit; no test count or model-quality metric is asserted for the current commit.
+
+**README versus implementation:** The current README's confirmation-based description agrees with the inspected source. The broader GitHub repository description mentions automatic scheduling and landlord communication; implementation instead distinguishes tenant visit requests from agency scheduling and uses internal tenant-to-agency messaging. Do not convert those broad phrases into portfolio claims. This is relational tool access rather than vector RAG. No external email, payments, password recovery, email verification or public production usage is established.
+
 ## Portfolio comparison supported by the repositories
 
 - **Backend engineering and RAG/LLM engineering:** RepoPilot AI, because it demonstrates database-backed durable workflows, hybrid retrieval, source-validated references, usage accounting, state transitions and bounded agents. Citation ID validity should not be confused with factual entailment.
 - **Applied local AI/full-stack UX:** Voice Notes AI, because its workflow connects React microphone/upload interactions to speech recognition and local LLM text cleanup through explicit API boundaries.
+- **Role-specific AI and transactional product workflows:** AI Rental Agent (Casa), because it combines live authorized tools, reviewable action proposals, persistent idempotent confirmation and database-enforced room/apartment booking rules.
 - **ML methodology and subjective-label research:** Disagreement-Aware Sexism Detection, because it explicitly models annotator vote distributions and analyzes error by disagreement/language. Reinforcement Learning Lab is broader exploratory algorithm and multi-agent/neuromorphic research.
 - **Quantitative predictive modeling:** Time-Series Forecasting (chronological regression benchmark, with gap/leakage caveats) and News Popularity Prediction (Spark classification/CV with publication-time feature caveats).
 
@@ -85,7 +98,7 @@
 
 # SECTION B — Final PROJECT_KNOWLEDGE
 
-The following Python definition is complete and can be placed directly in `project_knowledge.py`. No evidence links, secrets, or commentary are embedded in its knowledge strings.
+The following Python definition preserves the original six-project audit snapshot. The current canonical knowledge, including later additions, is maintained in `backend/app/project_knowledge.py`. No evidence links, secrets, or commentary are embedded in these knowledge strings.
 
 ```python
 """Repository-grounded portfolio chatbot context; audit notes are outside this module."""

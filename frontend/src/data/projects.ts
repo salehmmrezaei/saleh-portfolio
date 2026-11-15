@@ -182,6 +182,82 @@ export const projectDetails: Record<string, ProjectDetails> = {
       'Resource-bounded workers, ownership controls, migrations, automated tests, and CI',
     ],
   },
+  'ai-rental-agent': {
+    slug: 'ai-rental-agent',
+    category: 'AI-Assisted Rental Platform',
+    year: '2026',
+    role: 'AI / Full-Stack Engineer',
+    coreStack: ['Python', 'FastAPI', 'PostgreSQL', 'OpenAI Agents SDK', 'React', 'TypeScript', 'Docker'],
+    type: 'Personal Engineering Project',
+    overview: 'Casa is a full-stack rental platform for homes in Italy, combining tenant, landlord, and agency workspaces with role-aware AI assistants that query live rental data and prepare actions for explicit confirmation.',
+    problem: 'Finding and managing a rental spans property search, availability, applications, visits, contracts, and communication. Rooms and entire apartments can share the same property, making overlapping bookings and concurrent approvals difficult to handle correctly.\nCasa brings these workflows into one application and adds AI assistance for each role. The assistant can explain current rental data and prepare tasks, while backend permissions, transactional checks, and a separate confirmation step control every proposed change. The demo uses synthetic properties and accounts.',
+    pipeline: [
+      {
+        title: 'Shared rental data, scoped workspaces',
+        description: 'Connect a React interface to versioned FastAPI endpoints backed by PostgreSQL. Tenants search published homes and manage applications; landlords maintain their inventory; agency staff moderate listings, review applications, coordinate visits, and manage contracts.',
+      },
+      {
+        title: 'Transactional rental operations',
+        description: 'Derive availability from dated contracts and listing windows. Serialize competing bookings at the property level, enforce room and apartment conflict rules in PostgreSQL, and approve an application together with its contract in one retryable transaction.',
+      },
+      {
+        title: 'Role-aware AI assistance',
+        description: 'Use the OpenAI Agents SDK and Responses API with separate tenant, landlord, and agency tool sets. Query current authorized records, return database-verified references, and buffer proposed actions while persisting user-owned conversations server-side.',
+      },
+      {
+        title: 'Review, confirm, and revalidate',
+        description: 'Show the exact proposed task in a confirmation card with a ten-minute expiry. On confirmation, reauthenticate the user, recheck permissions and current business conditions, then commit the rental change and action result together so repeated confirmations reuse the stored result.',
+      },
+    ],
+    stack: {
+      'Backend & Identity': {
+        technologies: ['Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'Argon2id', 'JWT'],
+        role: 'Typed APIs, tenant and owner scoping, agency permissions, revocable authentication, listing moderation, and rental lifecycle services.',
+      },
+      'Data & Consistency': {
+        technologies: ['PostgreSQL', 'Alembic', 'Database Triggers', 'Exclusion Constraints', 'Transaction Retries'],
+        role: 'Relational rental history, exact EUR amounts, contract-derived availability, property-level booking serialization, and conflicting rental and visit checks.',
+      },
+      'AI & Tool Execution': {
+        technologies: ['OpenAI Agents SDK', 'OpenAI Responses API', 'Function Tools', 'PostgreSQL Chat History'],
+        role: 'Role-specific live-data tools, bounded agent runs, verified result cards, expiring action proposals, and atomic confirmation with server-side revalidation.',
+      },
+      'Frontend & Quality': {
+        technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'React Router', 'Docker Compose', 'pytest', 'Vitest', 'Playwright'],
+        role: 'Public search, photo galleries, three role dashboards, internal messaging, AI chat and confirmation controls, synthetic demo data, and database, component, and browser tests.',
+      },
+    },
+    challenges: [
+      {
+        title: 'Rooms and apartments sharing availability',
+        problem: 'An entire-apartment booking must block its rooms, while independent rooms can be rented together. Two approvals can also race after both observe an available property.',
+        approach: 'Use half-open rental intervals, update a parent property booking revision before conflict checks, and enforce overlap rules with PostgreSQL triggers. Retry complete transactions after serialization failures or deadlocks, and approve the application together with creating its contract atomically.',
+      },
+      {
+        title: 'AI actions that remain under user control',
+        problem: 'A natural-language request can be ambiguous, and a model response should not silently create an application, send a message, or change a listing.',
+        approach: 'Give the model read tools and proposal tools, then require a separate confirmation click against a server-owned action payload. Store expiry and status in PostgreSQL and commit each confirmed change with its result to make retries idempotent.',
+      },
+      {
+        title: 'Permissions across three assistant roles',
+        problem: 'The same platform serves tenants, property owners, and agency staff, each with different private records and authority over rental decisions.',
+        approach: 'Select tools by authenticated role, scope queries to the current user, keep chats private, and reuse backend authorization during execution. Landlords receive redacted contract data; listing approval and publication remain agency operations.',
+      },
+      {
+        title: 'Rental data changing during a conversation',
+        problem: 'A quoted rent, listing status, or availability window can change between an AI proposal and the user confirming it.',
+        approach: 'Build references and action summaries from database records, then recheck current access, prices, availability, and lifecycle rules inside the confirmation transaction. Reject stale proposals and use chat version checks to prevent concurrent replies from overwriting history.',
+      },
+    ],
+    outcomes: [
+      'A complete rental workflow spanning published search, saved homes, applications, contracts, visits, internal agency messaging, and occupancy reporting',
+      'Separate tenant, landlord, and agency workspaces with AI tool sets scoped to each role',
+      'Explicitly confirmed AI actions with expiry, fresh business checks, atomic persistence, and safe confirmation retries',
+      'Database-enforced room and apartment booking rules with concurrency and transaction-retry coverage',
+      'An opt-in demo with 300 synthetic properties across Bologna, Milan, Rome, and Florence, bundled photos, and accounts for all three roles',
+      'Docker Compose setup with PostgreSQL integration tests, frontend tests, and Playwright browser journeys; core rental workflows also work without an AI API key',
+    ],
+  },
   'voice-notes-ai': {
   slug: 'voice-notes-ai',
   category: 'AI application',
