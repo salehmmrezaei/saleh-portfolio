@@ -1,6 +1,6 @@
 # SECTION A — Repository evidence and analysis
 
-**Scope.** The original six public repositories under `salehmmrezaei` were inspected through their repository trees, implementation files, notebooks, committed output artifacts, and relevant documentation. Section 7 adds the November 2026 AI Rental Agent source review. Claims in Section B use implementation as the primary source; retained evaluation outputs are treated as recorded results, not fresh reproductions or production acceptance. Dates are given only where stated in repository documents or notebook headings.
+**Scope.** The original six public repositories under `salehmmrezaei` were inspected through their repository trees, implementation files, notebooks, committed output artifacts, and relevant documentation. Section 7 adds the earlier AI Rental Agent review; Section 8 updates Casa and MediFlow AI on 19 November 2026. Claims use implementation as the primary source; retained evaluation outputs are treated as recorded results, not fresh reproductions or production acceptance. Dates are given only where stated in repository documents or notebook headings.
 
 ## 1. RepoPilot AI
 
@@ -86,11 +86,64 @@
 
 **README versus implementation:** The current README's confirmation-based description agrees with the inspected source. The broader GitHub repository description mentions automatic scheduling and landlord communication; implementation instead distinguishes tenant visit requests from agency scheduling and uses internal tenant-to-agency messaging. Do not convert those broad phrases into portfolio claims. This is relational tool access rather than vector RAG. No external email, payments, password recovery, email verification or public production usage is established.
 
+## 8. MediFlow AI and Casa refresh — 19 November 2026
+
+The current canonical records are `backend/app/project_knowledge.py` and
+`backend/app/profile_knowledge.py`. This review supersedes the earlier Casa
+demo/deployment descriptions and stale MediFlow history limitations.
+
+**MediFlow AI:** reviewed main commit
+`8257203a94fe31490233d9fb65ba7114ca251b04`.
+[README](https://github.com/salehmmrezaei/mediflow-ai/blob/8257203a94fe31490233d9fb65ba7114ca251b04/README.md),
+[demo entry](https://github.com/salehmmrezaei/mediflow-ai/blob/8257203a94fe31490233d9fb65ba7114ca251b04/frontend/src/demo/DemoWorkspace.tsx),
+[API](https://github.com/salehmmrezaei/mediflow-ai/blob/8257203a94fe31490233d9fb65ba7114ca251b04/backend/app/main.py),
+[job repository](https://github.com/salehmmrezaei/mediflow-ai/blob/8257203a94fe31490233d9fb65ba7114ca251b04/backend/app/repositories/discharge_job_repository.py),
+and [history interface](https://github.com/salehmmrezaei/mediflow-ai/blob/8257203a94fe31490233d9fb65ba7114ca251b04/frontend/src/components/DischargeJobHistory.tsx)
+support the changes. The public `/demo` is an isolated browser simulation using
+fictional patients, predefined questions and local generation/edit/review state;
+it makes no AWS/OpenAI calls. The separate authenticated Doctor Workspace uses
+Cognito, Lambda/FastAPI, DynamoDB, Step Functions and structured OpenAI outputs.
+It now exposes patient-scoped saved discharge jobs with refresh/reopen controls.
+The history repository scans DynamoDB pages; no indexed-query scalability claim
+is made. Browser state resets do not erase persisted authenticated jobs.
+
+**AI Rental Agent (Casa):** reviewed main commit
+`bda648106823697c2ec548302f84bf3e21948ed4`.
+[Architecture](https://github.com/salehmmrezaei/ai-rental-agent/blob/bda648106823697c2ec548302f84bf3e21948ed4/docs/architecture.md),
+[assistant behavior](https://github.com/salehmmrezaei/ai-rental-agent/blob/bda648106823697c2ec548302f84bf3e21948ed4/docs/assistant.md),
+[Vercel entrypoint](https://github.com/salehmmrezaei/ai-rental-agent/blob/bda648106823697c2ec548302f84bf3e21948ed4/backend/vercel_entry.py),
+[demo policy](https://github.com/salehmmrezaei/ai-rental-agent/blob/bda648106823697c2ec548302f84bf3e21948ed4/backend/app/public_demo.py),
+and [runtime grants](https://github.com/salehmmrezaei/ai-rental-agent/blob/bda648106823697c2ec548302f84bf3e21948ed4/deploy/neon-runtime-role.sql)
+establish password-free demo personas, deterministic role-scoped queries and
+blocked rental mutations. The live Agents SDK/confirmation workflow remains a
+normal-mode capability; it is disabled in the public Vercel demo. The demo uses
+Neon PostgreSQL for fictional rental data plus shared expiring visitor/chat
+state and rate limits. A read-only rental database role still writes disposable
+demo state. Docker's default process-memory demo storage is a separate mode.
+
+**Public links:** `https://mediflow.salehmmrezaei.com/demo` and
+`https://casa.salehmmrezaei.com` are recorded from repository documentation and
+the owner's portfolio request. Public deployment does not establish business
+adoption, uptime, live model quality, clinical validation or real tenancies.
+
+**Skills:** added code-backed AWS serverless orchestration, Cognito/PKCE,
+DynamoDB conditional writes, idempotency, concurrency, structured outputs,
+human review, role-scoped agent tools, PostgreSQL rental consistency,
+Vercel/Neon deployment, pooling, shared state and least-privilege access.
+These are personal-project capabilities, not new employment or certifications.
+
+**Validation boundary:** repository documentation and implementation were
+inspected; remote project suites, AWS operations and live model generation were
+not rerun. Local chatbot regressions verify chunk construction and retrieval
+behavior with mocked external services. See `backend/README.md` for index
+activation and acceptance questions.
+
 ## Portfolio comparison supported by the repositories
 
 - **Backend engineering and RAG/LLM engineering:** RepoPilot AI, because it demonstrates database-backed durable workflows, hybrid retrieval, source-validated references, usage accounting, state transitions and bounded agents. Citation ID validity should not be confused with factual entailment.
 - **Applied local AI/full-stack UX:** Voice Notes AI, because its workflow connects React microphone/upload interactions to speech recognition and local LLM text cleanup through explicit API boundaries.
 - **Role-specific AI and transactional product workflows:** AI Rental Agent (Casa), because it combines live authorized tools, reviewable action proposals, persistent idempotent confirmation and database-enforced room/apartment booking rules.
+- **AWS serverless AI and explicit review:** MediFlow AI, because it combines authenticated note-based questions, durable discharge generation, conditional persistence, job history and unsigned doctor review. Its public demo simulates those interactions.
 - **ML methodology and subjective-label research:** Disagreement-Aware Sexism Detection, because it explicitly models annotator vote distributions and analyzes error by disagreement/language. Reinforcement Learning Lab is broader exploratory algorithm and multi-agent/neuromorphic research.
 - **Quantitative predictive modeling:** Time-Series Forecasting (chronological regression benchmark, with gap/leakage caveats) and News Popularity Prediction (Spark classification/CV with publication-time feature caveats).
 

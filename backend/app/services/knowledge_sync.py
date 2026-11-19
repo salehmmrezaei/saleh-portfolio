@@ -1,10 +1,12 @@
-from dataclasses import dataclass
+import argparse
+import json
+from collections import Counter
+from dataclasses import asdict, dataclass
 
 from sqlalchemy import create_engine, delete, select, func
 from sqlalchemy.dialects.postgresql import insert
 
 from ..config import get_migration_database_url
-from ..models import KnowledgeChunk
 from .knowledge_builder import (
     KnowledgeChunkInput,
     build_knowledge_chunks,
@@ -79,6 +81,8 @@ def needs_embedding(
 
 
 def sync_knowledge() -> KnowledgeSyncResult:
+    from ..models import KnowledgeChunk
+
     chunks = build_knowledge_chunks()
     embedding_model = get_embedding_model()
 
@@ -213,3 +217,39 @@ def sync_knowledge() -> KnowledgeSyncResult:
         upserted=len(changed_chunks),
         deleted=len(stale_ids),
     )
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description="Validate or synchronize portfolio chatbot knowledge."
+    )
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
+        "--check",
+        action="store_true",
+        help="Build and validate source chunks without database or AI calls.",
+    )
+    mode.add_argument(
+        "--sync",
+        action="store_true",
+        help="Embed changed chunks and update the configured knowledge database.",
+    )
+    args = parser.parse_args(argv)
+
+    if args.check:
+        chunks = build_knowledge_chunks()
+        summary = {
+            "total": len(chunks),
+            "sources": dict(sorted(Counter(
+                f"{chunk.source_type}/{chunk.source_key}"
+                for chunk in chunks
+            ).items())),
+        }
+    else:
+        summary = asdict(sync_knowledge())
+
+    print(json.dumps(summary, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

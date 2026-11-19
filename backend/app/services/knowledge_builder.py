@@ -344,6 +344,8 @@ def build_project_chunks() -> list[KnowledgeChunkInput]:
         for section in (
             "problem",
             "architecture",
+            "public_demo",
+            "public_links",
         ):
             value = project.get(section)
 

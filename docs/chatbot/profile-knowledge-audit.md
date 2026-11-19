@@ -28,6 +28,24 @@
 
 Salary expectations, preferred employment arrangement, relocation/remote preference, certifications, publications, dates for unverified positions, legal/immigration details beyond the direct statements, and detailed project architectures. Search results for the different domain `salehrezaei.com` and the LinkedIn slug `/in/salehrezaei/` were identified as belonging to a different profile and were excluded.
 
+### Project-backed skills refresh — 19 November 2026
+
+The updated canonical profile remains `backend/app/profile_knowledge.py`.
+The [current project evidence](project-knowledge-audit.md#8-mediflow-ai-and-casa-refresh--19-november-2026)
+now supports AWS skills previously omitted from the October review:
+MediFlow AI implements Lambda/FastAPI, API Gateway, Cognito/PKCE, DynamoDB
+conditional writes, Step Functions, SAM/CloudFormation, Secrets Manager,
+CloudWatch and scheduled recovery. It also supports structured note-based
+answers, explicit doctor review and frontend patient isolation.
+
+Casa supports role-specific OpenAI tools in normal mode, PostgreSQL booking
+consistency, transaction retries, expiring/idempotent confirmation, and a
+Vercel/Neon public demo with shared visitor/chat state, pooled connections and
+restricted runtime grants. Both public demos use fictional data and simulated
+AI responses. These additions describe demonstrated personal-project skills;
+they do not change employment history, availability, work authorization or
+education, and do not imply cloud certifications or clinical validation.
+
 # SECTION B — Final Python definition
 
 Use `backend/app/profile_knowledge.py` from the attached ZIP archive or the separate Python file. The definition contains the exact nine requested top-level keys and can be imported as `from app.profile_knowledge import PROFILE_KNOWLEDGE` when `backend` is on the Python import path.

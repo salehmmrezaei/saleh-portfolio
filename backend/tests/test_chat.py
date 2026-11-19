@@ -8,6 +8,9 @@ os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 
 from app.schemas import ChatRequest
 from app.services import chat
+from app.services import knowledge_context
+from app.services.knowledge_builder import build_knowledge_chunks
+from app.services.knowledge_retrieval import RetrievalCandidate, RetrievedKnowledge
 
 
 class FakeResponses:
@@ -140,3 +143,43 @@ def test_system_instructions_strictly_reject_unrelated_questions() -> None:
         "I can help with Saleh's portfolio"
         in instructions
     )
+
+
+@pytest.mark.parametrize("project_key, demo_url", [
+    ("mediflow-ai", "https://mediflow.salehmmrezaei.com/demo"),
+    ("ai-rental-agent", "https://casa.salehmmrezaei.com"),
+])
+def test_project_demo_evidence_reaches_chat_model(
+    monkeypatch: pytest.MonkeyPatch,
+    project_key: str,
+    demo_url: str,
+) -> None:
+    client = FakeClient("The public demo uses fictional data and simulated responses.")
+    chunks = [
+        chunk for chunk in build_knowledge_chunks()
+        if chunk.source_key == project_key
+        and chunk.section in {"public_demo", "public_links"}
+    ]
+    results = [
+        RetrievedKnowledge(
+            candidate=RetrievalCandidate(
+                id=index, source_type=chunk.source_type,
+                source_key=chunk.source_key, section=chunk.section,
+                chunk_index=chunk.chunk_index, title=chunk.title,
+                content=chunk.content,
+            ),
+            score=1.0, matched_by=("vector",),
+        )
+        for index, chunk in enumerate(chunks)
+    ]
+    monkeypatch.setattr(knowledge_context, "retrieve_knowledge", lambda *args, **kwargs: results)
+    monkeypatch.setattr(chat, "_get_openai_client", lambda: client)
+
+    chat.generate_chat_answer(ChatRequest(message=f"Can I try the {project_key} demo?"))
+
+    instructions = str(client.responses.kwargs["instructions"])
+    assert demo_url in instructions
+    assert f"https://github.com/salehmmrezaei/{project_key}" in instructions
+    assert "simulat" in instructions.lower()
+    assert "A simulated demo is not a live model call" in instructions
+    assert "copy\n  supplied public URLs exactly" in instructions

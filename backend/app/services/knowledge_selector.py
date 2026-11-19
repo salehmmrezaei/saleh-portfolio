@@ -205,7 +205,14 @@ def _selection_text(payload: ChatRequest) -> str:
 def _profile_skill_terms() -> tuple[str, ...]:
     skills = PROFILE_KNOWLEDGE.get("skills", {})
 
-    return tuple(_iter_strings(skills))
+    technologies = (
+        technology
+        for project in PROJECT_KNOWLEDGE.values()
+        for group in project.get("stack", {}).values()
+        for technology in group.get("technologies", [])
+    )
+
+    return (*_iter_strings(skills), *technologies)
 
 
 def _experience_terms() -> tuple[str, ...]:
@@ -418,6 +425,17 @@ def select_project_keys(
     payload: ChatRequest,
 ) -> list[str]:
     current_text = _normalize(payload.message)
+
+    named = [
+        key for key, project in PROJECT_KNOWLEDGE.items()
+        if any(
+            _contains_term(current_text, name)
+            for name in [project.get("title", key), *project.get("aliases", [])]
+        )
+    ]
+
+    if named:
+        return named[:MAX_SELECTED_PROJECTS]
 
     selected = _qualified_projects(
         _rank_projects(current_text)

@@ -198,8 +198,10 @@ def is_project_catalog_query(
     patterns = (
         r"^what projects has\b",
         r"^what projects have\b",
+        r"^what projects did saleh (?:build|create|develop)\b",
         r"^what are saleh s projects\b",
         r"^what are his projects\b",
+        r"^list (?:all |the )?projects\b",
         r"^list saleh s projects\b",
         r"^list his projects\b",
         r"^show me saleh s projects\b",
@@ -214,6 +216,23 @@ def is_project_catalog_query(
             normalized,
         )
         for pattern in patterns
+    )
+
+
+def is_project_demo_catalog_query(
+    query: str,
+) -> bool:
+    normalized = _normalize(query)
+
+    if match_project_keys(query):
+        return False
+
+    return bool(
+        re.search(r"\bdemos?\b", normalized)
+        and re.search(
+            r"\b(?:projects|which|list|show|available)\b",
+            normalized,
+        )
     )
 
 
@@ -375,7 +394,10 @@ def vector_search(
     ]
 
 
-def project_catalog() -> list[
+def project_catalog(
+    *,
+    section: str = "overview",
+) -> list[
     RetrievedKnowledge
 ]:
     statement = (
@@ -392,7 +414,7 @@ def project_catalog() -> list[
             KnowledgeChunk.source_type
             == "project",
             KnowledgeChunk.section
-            == "overview",
+            == section,
         )
     )
 
@@ -514,12 +536,34 @@ def retrieve_knowledge(
     if not query:
         return []
 
+    if is_project_demo_catalog_query(query):
+        return project_catalog(
+            section="public_demo",
+        )
+
     if is_project_catalog_query(query):
         return project_catalog()
 
     project_keys = match_project_keys(
         query
     )
+
+    exact_context: list[RetrievedKnowledge] = []
+    normalized = _normalize(query)
+
+    if project_keys and re.search(
+        r"\b(?:demo|demos|try|visit|url|link|github|source code)\b",
+        normalized,
+    ):
+        section = (
+            "public_links"
+            if re.search(r"\b(?:github|source code)\b", normalized)
+            else "public_demo"
+        )
+        exact_context = [
+            result for result in project_catalog(section=section)
+            if result.candidate.source_key in project_keys
+        ][:max(limit, 0)]
 
     if project_keys:
         source_type = "project"
@@ -545,8 +589,46 @@ def retrieve_knowledge(
         source_keys=source_keys,
     )
 
-    return fuse_ranked_results(
+    results = fuse_ranked_results(
         lexical=lexical,
         vector=vector,
-        limit=limit,
+        limit=(
+            CANDIDATE_LIMIT * 2
+            if len(project_keys) > 1
+            else limit
+        ),
     )
+
+    if exact_context:
+        exact_ids = {result.candidate.id for result in exact_context}
+        results = [
+            *exact_context,
+            *(result for result in results if result.candidate.id not in exact_ids),
+        ]
+
+    if len(project_keys) < 2:
+        return results[:max(limit, 0)]
+
+    # A comparison needs evidence from each named project. Keep
+    # each project's rank order while taking turns between them.
+    grouped: dict[str, list[RetrievedKnowledge]] = {}
+
+    for result in results:
+        grouped.setdefault(
+            result.candidate.source_key,
+            [],
+        ).append(result)
+
+    balanced: list[RetrievedKnowledge] = []
+
+    while grouped and len(balanced) < limit:
+        for project_key in tuple(grouped):
+            balanced.append(grouped[project_key].pop(0))
+
+            if not grouped[project_key]:
+                del grouped[project_key]
+
+            if len(balanced) >= limit:
+                break
+
+    return balanced
