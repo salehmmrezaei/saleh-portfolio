@@ -9,6 +9,7 @@ export interface ProjectDetails {
   coreStack?: string[];
   type?: string;
   liveDemoUrl?: string;
+  liveDemoNote?: string;
   stack: Record<string, StackGroup>;
   challenges: string[] | ChallengeCaseStudy[];
   outcomes: string[];
@@ -43,6 +44,7 @@ export const projectDetails: Record<string, ProjectDetails> = {
     coreStack: ['AWS Lambda', 'Step Functions', 'FastAPI', 'DynamoDB', 'Cognito', 'React', 'TypeScript', 'OpenAI'],
     type: 'Personal Engineering Prototype',
     liveDemoUrl: 'https://mediflow.salehmmrezaei.com/demo',
+    liveDemoNote: 'The public demo uses fictional records and simulated responses. No login is required. The separate AWS-backed Doctor Workspace requires authorized access.',
     overview: 'A full-stack healthcare workflow prototype featuring evidence-grounded clinical questions, asynchronous discharge-letter generation, and explicit doctor review, using fictional patient data.',
     problem: 'Clinical questions and discharge documentation draw on information spread across patient notes. An AI workflow needs to keep each doctor within their assigned records, show the notes behind generated text, and make missing information visible.\nMediFlow AI explores this workflow with fictional patient data: answer questions from authorized notes, generate a structured discharge draft in the background, and let a doctor edit, approve, or reject it through an explicit review step.',
     pipeline: [
@@ -189,6 +191,8 @@ export const projectDetails: Record<string, ProjectDetails> = {
     role: 'AI / Full-Stack Engineer',
     coreStack: ['Python', 'FastAPI', 'PostgreSQL', 'OpenAI Agents SDK', 'React', 'TypeScript', 'Docker'],
     type: 'Personal Engineering Project',
+    liveDemoUrl: 'https://casa.salehmmrezaei.com',
+    liveDemoNote: 'Explore tenant, landlord, and agency dashboards without a password. The public demo uses fictional rental data, keeps rental records read-only, and includes a simulated AI assistant.',
     overview: 'Casa is a full-stack rental platform for homes in Italy, combining tenant, landlord, and agency workspaces with role-aware AI assistants that query live rental data and prepare actions for explicit confirmation.',
     problem: 'Finding and managing a rental spans property search, availability, applications, visits, contracts, and communication. Rooms and entire apartments can share the same property, making overlapping bookings and concurrent approvals difficult to handle correctly.\nCasa brings these workflows into one application and adds AI assistance for each role. The assistant can explain current rental data and prepare tasks, while backend permissions, transactional checks, and a separate confirmation step control every proposed change. The demo uses synthetic properties and accounts.',
     pipeline: [
