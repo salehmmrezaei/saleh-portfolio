@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" fill="none">
+  <defs>
+    <filter id="badge-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#1A2634" flood-opacity="0.16" />
+    </filter>
+    <linearGradient id="hex-grad" x1="128" y1="22" x2="128" y2="230" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFA559" />
+      <stop offset="100%" stop-color="#EA8035" />
+    </linearGradient>
+    <linearGradient id="highlight-grad" x1="128" y1="28" x2="128" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#badge-shadow)">
+    <!-- Rounded Hexagon Base -->
+    <path d="M114.5 23.8 C122.9 19.0 133.1 19.0 141.5 23.8 L208.5 62.5 C216.9 67.3 222.0 76.2 222.0 85.9 L222.0 163.3 C222.0 173.0 216.9 181.9 208.5 186.7 L141.5 225.4 C133.1 230.2 122.9 230.2 114.5 225.4 L47.5 186.7 C39.1 181.9 34.0 173.0 34.0 163.3 L34.0 85.9 C34.0 76.2 39.1 67.3 47.5 62.5 Z" fill="url(#hex-grad)" stroke="#233746" stroke-width="11" stroke-linejoin="round" />
+
+    <!-- Top Bevel Highlight -->
+    <path d="M117.5 31.5 C124.0 27.8 132.0 27.8 138.5 31.5 L201.5 67.9 C208.0 71.6 212.0 78.6 212.0 86.1 L212.0 100.0 C212.0 92.5 208.0 85.5 201.5 81.8 L138.5 45.4 C132.0 41.7 124.0 41.7 117.5 45.4 L54.5 81.8 C48.0 85.5 44.0 92.5 44.0 100.0 L44.0 86.1 C44.0 78.6 48.0 71.6 54.5 67.9 Z" fill="url(#highlight-grad)" />
+
+    <!-- Inner Top Chevron -->
+    <path d="M78 81 L120.5 56.5 C125.1 53.8 130.9 53.8 135.5 56.5 L178 81" stroke="#233746" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Vector "DEMO" Wordmark (Font-Independent Paths) -->
+    <g stroke="#233746" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round">
+      <!-- D -->
+      <path d="M60 110 L60 144 M60 110 L71 110 C81 110 86 117 86 127 C86 137 81 144 71 144 L60 144" />
+      <!-- E -->
+      <path d="M121 110 L100 110 L100 144 L121 144 M100 127 L117 127" />
+      <!-- M -->
+      <path d="M135 144 L135 110 L149 131 L163 110 L163 144" />
+      <!-- O -->
+      <rect x="177" y="110" width="24" height="34" rx="12" />
+    </g>
+
+    <!-- Bottom Three-Dot Accent -->
+    <circle cx="116" cy="182" r="3.2" fill="#233746" opacity="0.85" />
+    <circle cx="128" cy="187" r="4.2" fill="#233746" />
+    <circle cx="140" cy="182" r="3.2" fill="#233746" opacity="0.85" />
+  </g>
+</svg>

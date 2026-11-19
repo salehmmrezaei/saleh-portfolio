@@ -1,6 +1,6 @@
 import { projectDetails, slugify, type ChallengeCaseStudy, type PipelineStage, type ProjectDetails } from '../data/projects';
 import type { Project } from '../types';
-import { ExternalLinkIcon } from './Icons';
+import demoIcon from '../assets/demo.svg';
 
 interface ProjectDetailProps {
   project: Project;
@@ -58,22 +58,20 @@ export function ProjectDetail({ project, projectIndex, projects, onNavigate, onB
             <span className="project-github-icon" aria-hidden="true" />
           </a>
           {details.liveDemoUrl && (
-            <div className="project-demo">
-              <a
-                className="project-github"
-                href={details.liveDemoUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="project-github-label">Visit Live Demo</span>
-                <ExternalLinkIcon className="external-icon" />
-              </a>
-              <p className="project-demo-note">
-                The public demo uses fictional records and simulated responses. No login is required. The separate AWS-backed Doctor Workspace requires authorized access.
-              </p>
-            </div>
+            <a
+              className="project-github"
+              href={details.liveDemoUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="project-github-label">Visit Live Demo</span>
+              <img className="project-demo-icon" src={demoIcon} alt="" width="28" height="28" />
+            </a>
           )}
         </div>
+        {details.liveDemoUrl && details.liveDemoNote && (
+          <p className="project-demo-note">{details.liveDemoNote}</p>
+        )}
 
       </header>
 
