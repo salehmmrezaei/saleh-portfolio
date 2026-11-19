@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from app.schemas import (
     ChatRequest,
     ChatTurn,
@@ -167,3 +169,27 @@ def test_chunk_content_is_bounded(
         == knowledge_context
         .MAX_CHUNK_CONTEXT_CHARS
     )
+
+
+@pytest.mark.parametrize("message", [
+    "Where can I try it?",
+    "Can I visit its demo?",
+    "Is it live?",
+    "What technologies does it use?",
+])
+def test_project_demo_follow_up_keeps_project(message: str) -> None:
+    payload = ChatRequest(
+        message=message,
+        history=[ChatTurn(role="user", content="Tell me about Casa.")],
+    )
+    query = knowledge_context.build_retrieval_query(payload)
+    assert "Tell me about Casa." in query
+    assert message in query
+
+
+def test_unrelated_contact_question_does_not_inherit_project() -> None:
+    payload = ChatRequest(
+        message="Can I contact Saleh?",
+        history=[ChatTurn(role="user", content="Tell me about Casa.")],
+    )
+    assert knowledge_context.build_retrieval_query(payload) == payload.message

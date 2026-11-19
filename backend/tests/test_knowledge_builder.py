@@ -83,3 +83,27 @@ def test_does_not_embed_raw_retrieval_term_lists() -> None:
         chunk.section != "retrieval_terms"
         for chunk in chunks
     )
+
+
+def test_public_demos_and_links_are_searchable() -> None:
+    chunks = build_knowledge_chunks()
+
+    for project_key, demo_url in (
+        ("mediflow-ai", "https://mediflow.salehmmrezaei.com/demo"),
+        ("ai-rental-agent", "https://casa.salehmmrezaei.com"),
+    ):
+        demo = next(
+            chunk for chunk in chunks
+            if chunk.source_key == project_key
+            and chunk.section == "public_demo"
+        )
+        links = next(
+            chunk for chunk in chunks
+            if chunk.source_key == project_key
+            and chunk.section == "public_links"
+        )
+
+        assert demo_url in demo.content
+        assert "simulat" in demo.content.lower()
+        assert demo_url in links.content
+        assert f"https://github.com/salehmmrezaei/{project_key}" in links.content

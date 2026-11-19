@@ -8,7 +8,11 @@ PROFILE_KNOWLEDGE = {
             "from the University of Bologna and a background in software engineering. "
             "Professional work includes retrieval-augmented generation, LLM-based "
             "document processing, AI agent workflows, Python backend services, "
-            "and applied machine learning. Also builds full-stack AI applications."
+            "and applied machine learning. Personal projects include MediFlow AI, "
+            "an AWS serverless healthcare workflow prototype with doctor review, "
+            "and AI Rental Agent (Casa), a full-stack rental platform with "
+            "role-scoped assistants and transactional rental workflows. Both have "
+            "public demos with fictional data and simulated AI responses."
         ),
     },
     "experience": [
@@ -122,6 +126,10 @@ PROFILE_KNOWLEDGE = {
             "Vector databases and pgvector",
             "LangChain",
             "AI agent workflows",
+            "OpenAI Agents SDK and role-specific tool calling (AI Rental Agent / Casa)",
+            "OpenAI Responses API and schema-validated structured outputs",
+            "Evidence-linked answers and explicit missing-information handling (MediFlow AI)",
+            "Human-reviewed AI drafts and explicitly confirmed agent actions",
             "Prompt orchestration and structured extraction",
             "LLM and retrieval evaluation",
             "Local LLM inference with Ollama",
@@ -137,6 +145,24 @@ PROFILE_KNOWLEDGE = {
             "Background job processing",
             "Automated testing",
             "API input validation",
+            "SQLAlchemy and Alembic",
+            "Role-based authorization and ownership checks",
+            "Idempotent API requests and optimistic concurrency",
+            "Transactional PostgreSQL booking rules and retry handling (Casa)",
+            "JWT authentication and Argon2id password hashing",
+        ],
+        "cloud_and_serverless": [
+            "AWS serverless application engineering (MediFlow AI prototype)",
+            "AWS Lambda, API Gateway and Mangum",
+            "AWS Step Functions orchestration and background job recovery",
+            "DynamoDB conditional writes and durable workflow state",
+            "Amazon Cognito authorization code flow with PKCE",
+            "AWS SAM and CloudFormation infrastructure as code",
+            "AWS Secrets Manager, CloudWatch and scheduled recovery",
+            "Vercel React/FastAPI deployment (Casa public demo)",
+            "Neon PostgreSQL pooling and SQLAlchemy NullPool",
+            "Shared serverless visitor/chat state and PostgreSQL rate limits",
+            "Least-privilege runtime database access",
         ],
         "machine_learning_and_data": [
             "PyTorch",
@@ -158,6 +184,10 @@ PROFILE_KNOWLEDGE = {
             "GitHub Actions CI",
             "Frontend/backend integration",
             "Docker Compose",
+            "Vite and React Router",
+            "React patient-context isolation and request cancellation (MediFlow AI)",
+            "pytest, Vitest, React Testing Library and Playwright",
+            "Deterministic public demos separated from live AI workflows",
         ],
         "algorithms_and_problem_solving": [
             "Algorithmic problem solving",
@@ -201,7 +231,8 @@ PROFILE_KNOWLEDGE = {
             "topic": "Production AI and backend engineering",
             "confidence": "strongly_inferred",
             "basis": (
-                "CNR and Denxa work, plus RepoPilot AI and Voice Notes AI, "
+                "CNR and Denxa work, plus RepoPilot AI, Voice Notes AI, "
+                "MediFlow AI and AI Rental Agent (Casa), "
                 "demonstrate sustained work on AI services and backend systems."
             ),
         },

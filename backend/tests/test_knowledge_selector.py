@@ -160,3 +160,20 @@ def test_forecasting_project_selects_time_series() -> None:
     assert select_project_keys(payload) == [
         "time-series-forecasting"
     ]
+
+
+def test_selects_new_projects_from_short_names() -> None:
+    for name, key in (("mediflowai", "mediflow-ai"), ("Casa", "ai-rental-agent")):
+        assert select_project_keys(ChatRequest(message=f"Tell me about {name}.")) == [key]
+
+
+def test_new_project_comparison_preserves_both_entries() -> None:
+    context = json.loads(build_knowledge_context(ChatRequest(
+        message="Compare MediFlow AI and Casa.",
+    )))
+    assert set(context["projects"]) == {"mediflow-ai", "ai-rental-agent"}
+
+
+def test_serverless_skills_are_selected() -> None:
+    fields = select_profile_fields(ChatRequest(message="Does Saleh know AWS Lambda?"))
+    assert "skills" in fields
