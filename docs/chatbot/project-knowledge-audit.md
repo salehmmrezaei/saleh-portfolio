@@ -138,6 +138,24 @@ not rerun. Local chatbot regressions verify chunk construction and retrieval
 behavior with mocked external services. See `backend/README.md` for index
 activation and acceptance questions.
 
+## Repository dates — 20 November 2026
+
+`repository_created` uses the UTC date from GitHub's repository API `created_at`
+field (`GET /repos/salehmmrezaei/{repository}`). These dates identify repository
+creation, not verified project start/completion dates or first development work.
+`updated_at` and `pushed_at` are not used as project dates.
+
+| Repository | Created |
+| --- | --- |
+| repopilot-ai | 2026-09-22 |
+| ai-rental-agent | 2026-10-08 |
+| mediflow-ai | 2026-11-12 |
+| voice-notes-ai | 2026-09-09 |
+| disagreement-aware-sexism-detection | 2026-05-01 |
+| reinforcement-learning-lab | 2026-09-21 |
+| time-series-forecasting | 2026-05-09 |
+| news-popularity-prediction | 2026-01-25 |
+
 ## Portfolio comparison supported by the repositories
 
 - **Backend engineering and RAG/LLM engineering:** RepoPilot AI, because it demonstrates database-backed durable workflows, hybrid retrieval, source-validated references, usage accounting, state transitions and bounded agents. Citation ID validity should not be confused with factual entailment.

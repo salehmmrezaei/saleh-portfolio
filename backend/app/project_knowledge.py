@@ -3,6 +3,7 @@
 PROJECT_KNOWLEDGE = {
     "repopilot-ai": {
         "title": "RepoPilot AI",
+        "repository_created": "2026-09-22",
         "aliases": ["RepoPilot", "RepoPilot AI", "repopilot-ai", "repository intelligence assistant"],
         "keywords": ["repopilot", "repository understanding", "codebase Q&A", "GitHub repository import", "FastAPI", "React", "PostgreSQL", "pgvector", "Redis", "Celery", "RAG", "hybrid code search", "grounded answers", "investigation agent", "patch proposal", "sandbox execution"],
         "role": "Project published under Saleh's GitHub account; individual authorship of each module is not separately established.",
@@ -78,6 +79,7 @@ PROJECT_KNOWLEDGE = {
     },
     "ai-rental-agent": {
         "title": "AI Rental Agent",
+        "repository_created": "2026-10-08",
         "aliases": ["AI Rental Agent", "ai-rental-agent", "Casa", "Casa AI Rental Agent", "rental platform"],
         "keywords": ["Casa", "rental agent", "rental platform", "property management", "tenant", "landlord", "agency", "OpenAI Agents SDK", "Responses API", "human confirmation", "FastAPI", "PostgreSQL", "React", "TypeScript", "booking conflicts", "availability", "contract", "visit scheduling"],
         "role": "Personal engineering project implemented by Saleh, as stated by him; AI / Full-Stack Engineer.",
@@ -160,6 +162,7 @@ PROJECT_KNOWLEDGE = {
     },
     "mediflow-ai": {
         "title": "MediFlow AI",
+        "repository_created": "2026-11-12",
         "aliases": ["MediFlow", "MediFlow AI", "mediflowai", "Medi Flow", "Medi Flow AI", "mediflow-ai", "serverless healthcare AI workflow platform"],
         "keywords": ["mediflow", "healthcare workflow", "clinical assistant", "clinical notes", "discharge letters", "doctor review", "fictional patient data", "serverless", "AWS Lambda", "Step Functions", "FastAPI", "DynamoDB", "Cognito", "React", "TypeScript", "OpenAI"],
         "role": "Personal engineering project implemented by Saleh, as stated by him; AI / Full-Stack Engineer.",
@@ -247,6 +250,7 @@ PROJECT_KNOWLEDGE = {
     },
     "voice-notes-ai": {
         "title": "Voice Notes AI",
+        "repository_created": "2026-09-09",
         "aliases": ["Voice Notes", "Voice Notes AI", "voice-notes-ai", "local voice transcription"],
         "keywords": ["voice notes", "speech to text", "transcription", "Faster-Whisper", "Ollama", "Llama 3.2", "local inference", "React", "FastAPI", "browser recording", "audio upload", "privacy"],
         "role": "Application in Saleh's GitHub repository; individual component attribution is not independently confirmed.",
@@ -291,6 +295,7 @@ PROJECT_KNOWLEDGE = {
     },
     "disagreement-aware-sexism-detection": {
         "title": "Disagreement-Aware Sexism Detection",
+        "repository_created": "2026-05-01",
         "aliases": ["Learning from Disagreement for Multilingual Sexism Detection", "disagreement-aware-sexism-detection", "EXIST 2023 sexism detection"],
         "keywords": ["EXIST 2023", "sexism detection", "annotator disagreement", "soft labels", "multilingual NLP", "XLM-RoBERTa", "multilingual BERT", "KL divergence", "PyTorch", "classification", "ensemble"],
         "role": "Research code published in Saleh's GitHub repository; no component-by-component contribution attribution verified.",
@@ -337,6 +342,7 @@ PROJECT_KNOWLEDGE = {
     },
     "reinforcement-learning-lab": {
         "title": "Reinforcement Learning Lab",
+        "repository_created": "2026-09-21",
         "aliases": ["reinforcement-learning-lab", "RL Lab", "reinforcement learning projects", "CNR-ISMN RL experiments"],
         "keywords": ["reinforcement learning", "DQN", "Double DQN", "tabular Q-learning", "IQL", "parameter-shared DQN", "VDN", "QMIX", "PPO components", "CartPole", "MountainCar", "FrozenLake", "CliffWalking", "multi-agent RL", "spintronic synapse", "neuromorphic"],
         "role": "Collection in Saleh's GitHub repository; README identifies CNR-ISMN internship research, but collaborator-specific contributions are not established.",
@@ -377,6 +383,7 @@ PROJECT_KNOWLEDGE = {
     },
     "time-series-forecasting": {
         "title": "Time-Series Forecasting",
+        "repository_created": "2026-05-09",
         "aliases": ["Campus Load Forecasting", "Savona Campus Load Forecasting", "Electrical Load Forecasting", "Forecasting Project", "time-series-forecasting", "electrical load prediction"],
         "keywords": ["campus load", "time series", "electricity demand", "Savona", "15-minute resampling", "lag features", "rolling statistics", "LightGBM", "XGBoost", "Random Forest", "previous-week baseline", "MAE", "RMSE", "MAPE", "temporal leakage"],
         "role": "The repository contains an authored forecasting notebook and README; specific contributions by any collaborators are not independently established.",
@@ -424,6 +431,7 @@ PROJECT_KNOWLEDGE = {
     },
     "news-popularity-prediction": {
         "title": "News Popularity Prediction",
+        "repository_created": "2026-01-25",
         "aliases": ["Online News Popularity Prediction", "Online News Popularity (Big Data)", "news-popularity-prediction", "Big Data Analytics news classifier"],
         "keywords": ["online news popularity", "PySpark", "Spark MLlib", "classification", "Random Forest", "Gradient Boosted Trees", "Linear SVC", "Logistic Regression", "Decision Tree", "Naive Bayes", "ROC AUC", "cross-validation"],
         "role": "The two committed notebooks identify Saleh as their author; presented as academic coursework in Big Data Analytics and Text Mining.",

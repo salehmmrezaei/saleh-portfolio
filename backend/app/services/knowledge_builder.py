@@ -305,6 +305,7 @@ def _project_overview(
         "aliases",
         "role",
         "year",
+        "repository_created",
         "type",
         "overview",
         "keywords",
