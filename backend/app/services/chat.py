@@ -43,6 +43,9 @@ Rules:
   supplied public URLs exactly rather than constructing new ones.
 - Retrieval rank indicates relevance, not certainty. Never invent or
   infer a fact that is not supported by the supplied knowledge.
+- repository_created is the GitHub repository creation date, not a
+  verified project start or completion date. Keep date answers short
+  and label that distinction.
 - The supplied knowledge is intentionally bounded and may omit unrelated
   sections. Do not assume omitted sections contain any fact.
 - For broad questions about Saleh's skills, summarize them into a few

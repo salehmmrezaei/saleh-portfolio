@@ -1,3 +1,5 @@
+from datetime import date
+
 from app.project_knowledge import PROJECT_KNOWLEDGE
 from app.services.knowledge_builder import (
     build_knowledge_chunks,
@@ -39,6 +41,19 @@ def test_contains_every_project() -> None:
     assert project_keys == set(
         PROJECT_KNOWLEDGE
     )
+
+
+def test_repository_dates_reach_project_overviews() -> None:
+    overviews = {
+        chunk.source_key: chunk.content
+        for chunk in build_knowledge_chunks()
+        if chunk.source_type == "project" and chunk.section == "overview"
+    }
+
+    for key, project in PROJECT_KNOWLEDGE.items():
+        created = project["repository_created"]
+        assert date.fromisoformat(created).isoformat() == created
+        assert f"Repository Created: {created}" in overviews[key][:2200]
 
 
 def test_profile_has_precise_fact_chunks() -> None:

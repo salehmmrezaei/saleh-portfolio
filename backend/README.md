@@ -4,6 +4,15 @@ The chatbot retrieves project context from PostgreSQL/pgvector and adds selected
 profile facts directly from Python. Editing knowledge source files alone does
 not refresh an existing database index.
 
+Each project's `repository_created` is the GitHub repository creation date
+(UTC), not a verified development start or completion date.
+
+The GitHub repository is private; the deployed website remains public. Keep both
+knowledge Python files and the audit documents tracked in the private repository
+so backend imports, tests and deployment builds have the required content.
+Deployment integrations must retain permission to read the private repository.
+Repository privacy does not retract copies previously downloaded while public.
+
 ## Source files
 
 - `app/project_knowledge.py`: project capabilities, architecture, stack,
